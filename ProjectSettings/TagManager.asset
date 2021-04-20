@@ -43,3 +43,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: FiguresLayer
+    uniqueID: 1637815211
+    locked: 0
+  - name: CellsLayer
+    uniqueID: 3233704857
+    locked: 0

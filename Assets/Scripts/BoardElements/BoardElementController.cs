@@ -9,32 +9,24 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     public int x;
     public int y;
 
-    public static event GameplayManager.FigureAction Clicked;
+    public static event GameplayManager.Figure Clicked;
 
+    [SerializeField]
     private Image img;
-    private IBoardElement element;
-    private RectTransform rt;
+    [SerializeField]
+    private RectTransform rectTransform;
+    [SerializeField]
+    private CanvasGroup canvasGroup;
+
+    public Color Color { get => img.color; set => img.color = value; }
+
+    public IBoardElement element;
+    public IRule Rule;
 
     private void Awake()
     {
-        img = gameObject.GetComponent<Image>();
         element = gameObject.GetComponent<IBoardElement>();
-        rt = gameObject.GetComponent<RectTransform>();
-        //rt.anchoredPosition = Vector3.zero;
-    }
-    private void Start()
-    {
 
-    }
-
-    private void Update()
-    {
-        
-    }
-
-    public void SetColor(Color color)
-    {
-        img.color = color;
     }
 
     public void SetSprite(Sprite s)
@@ -48,14 +40,34 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
         this.y = y;
     }
 
-    public void SetTransform(Vector3 v)
+    public (int x, int y) GetCoordinates()
     {
-        rt.position = v;
+        return (x, y);
+    }
+
+    public void SetTransform(Vector2 v)
+    {
+        rectTransform.localPosition = v;
+    }
+
+    public void SetState(bool state)
+    {
+        canvasGroup.blocksRaycasts = state;
+        //element.SetActive();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Clicked(x, y);
-        //element.Clicked(x, y);
+        Clicked(this);
+    }
+
+    public void Select()
+    {
+        element.Select();
+    }
+
+    public void DeSelect()
+    {
+        element.DeSelect();
     }
 }

@@ -11,7 +11,8 @@ public class PlayerChoises : ScriptableObject
     private void OnEnable()
     {
         Rule = new RuleJumps();
-        GameMode = new Corners();
+        GameMode = new Corners(Rule);
+
     }
 
     private void OnDisable()

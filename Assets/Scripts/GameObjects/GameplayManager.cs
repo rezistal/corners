@@ -5,48 +5,45 @@ using System.Linq;
 
 public class GameplayManager : MonoBehaviour
 {
+    
     [SerializeField]
     private PlayerChoises pch;
     [SerializeField]
-    private Canvas canvas;
+    private Transform backgroundLayer;
+    [SerializeField]
+    private Transform cellsLayer;
+    [SerializeField]
+    private Transform figuresLayer;
 
-    private IRule rule;
     private IGameMode gameMode;
     private Corners gm;
+   
+    public delegate void Figure(BoardElementController element);
 
-
-    public delegate void FigureAction(int x, int y);
+    private void Manage(BoardElementController element)
+    {
+        gm.Manage(element);
+    }
 
     private void OnEnable()
     {
-        BoardElementController.Clicked += ApplyRules;
+        BoardElementController.Clicked += Manage;
     }
 
     private void OnDisable()
     {
-        BoardElementController.Clicked -= ApplyRules;
+        BoardElementController.Clicked -= Manage;
     }
 
-
-    public void ApplyRules(int x, int y)
-    {
-        gm.CheckRules(x,y);
-    }
-
-    // Start is called before the first frame update
     void Start()
     {
-        rule = pch.Rule;
+        IRule rule = pch.Rule;
         gameMode = pch.GameMode;
 
-        gm = new Corners();
-        gm.CreateGameOnCanvas(canvas.transform);
+        gm = new Corners(new RuleSteps());
+        gm.CreateGameOnCanvas(backgroundLayer, cellsLayer, figuresLayer);
 
+        gm.StartGame();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        gm.UpdateGame();
-    }
+   
 }
