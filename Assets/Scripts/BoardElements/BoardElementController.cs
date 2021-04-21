@@ -34,10 +34,10 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
         img.sprite = s;
     }
 
-    public void SetCoordinates(int x, int y)
+    public void SetCoordinates((int x, int y) c)
     {
-        this.x = x;
-        this.y = y;
+        x = c.x;
+        y = c.y;
     }
 
     public (int x, int y) GetCoordinates()
@@ -54,6 +54,16 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     {
         canvasGroup.blocksRaycasts = state;
         //element.SetActive();
+    }
+
+    public void Activate()
+    {
+        canvasGroup.blocksRaycasts = true;
+    }
+
+    public void Deactivate()
+    {
+        canvasGroup.blocksRaycasts = false;
     }
 
     public void OnPointerClick(PointerEventData eventData)
