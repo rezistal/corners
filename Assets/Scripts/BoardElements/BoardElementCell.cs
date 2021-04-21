@@ -20,8 +20,12 @@ public class BoardElementCell : MonoBehaviour, IBoardElement
         hightlight.SetActive(true);
     }
 
-    public void DeSelect()
+    public void Deselect()
     {
         hightlight.SetActive(false);
     }
+
+    public string Name { get => "cell"; }
+
+    public IRule Rule { get; set; }
 }

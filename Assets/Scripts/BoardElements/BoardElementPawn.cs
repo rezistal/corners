@@ -9,18 +9,18 @@ public class BoardElementPawn : MonoBehaviour, IBoardElement
     [SerializeField]
     private Color oldColor;
 
-    private void Start()
-    {
-        oldColor = controller.Color;
-    }
-
     public void Select()
     {
+        oldColor = controller.Color;
         controller.Color = Color.yellow;
     }
 
-    public void DeSelect()
+    public void Deselect()
     {
         controller.Color = oldColor;
     }
+
+    public string Name { get => "pawn"; }
+
+    public IRule Rule { get; set; }
 }

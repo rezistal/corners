@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3338076108911791731}
+  oldColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!222 &6844400512326515760
 CanvasRenderer:
   m_ObjectHideFlags: 0

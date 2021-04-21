@@ -5,82 +5,104 @@ using System.Linq;
 
 public class Corners : IGameMode
 {
-    private readonly IRule rule;
-    private readonly BoardManager boardManager;
-    private readonly PlayerManager playerManager;
+    private IRule rule;
+    private BoardManager boardManager;
+    private PlayerManager playerManager;
 
-    public BoardElementController selectedFigure;
+    public bool Endgame { get; set; }
 
     public Corners(IRule r, BoardManager b, PlayerManager p)
     {
         rule = r;
         playerManager = p;
         boardManager = b;
+        Endgame = false;
+    }
+    
+    public void StartGame()
+    {
+        //В этой игре все фигуры двигаются по одному выбранному игроками правилу. Применяем его к каждой фигуре
+        foreach (BoardElementController bec in playerManager.AllFigures.Values.ToList())
+        {
+            bec.Rule = rule;
+        }
+        Refresh();
+        //Делаем фигуры текущего игрока кликабельными
+        playerManager.ActivateCurrentPlayer();
     }
 
-    /*
-    public bool WinCondition()
-    {
-        List<(int, int)> playerFigures = PlayerFigures;
-        List<(int, int)> opponentFigures = OpponentFigures;
+    public void StopGame()
+    {   
+        Refresh();
+    }
 
-        foreach (var v in playerFigures)
+    //Условие победы в уголках - все фигуры текущего игрока встали на начальные ккординаты его оппонента
+    private bool WinCondition()
+    {
+        //return true;
+        List<(int, int)> currentPlayerFiguresPositions = playerManager.CurrentPlayer.Figures.Keys.ToList();
+        List<(int, int)> opponentFiguresStartPositions = playerManager.NextPlayer.StartCondition;
+
+        foreach (var v in currentPlayerFiguresPositions)
         {
-            if (!opponentFigures.Contains(v))
+            if (!opponentFiguresStartPositions.Contains(v))
             {
                 return false;
             }
         }
         return true;
     }
-    */
-    public void Manage(BoardElementController element)
+
+    private void Refresh()
     {
-        /*
-        string t = element.element.GetType().FullName;
+        //Делаем ВСЕ клетки некликабельными
+        boardManager.ResetBoard();
+        //Делаем все фигуры некликабельными
+        playerManager.DeactivateAll();
+    }
 
-        switch (t)
+    public void Manage(BoardElementController figure)
+    {
+        switch (figure.ElementName)
         {
-            case "BoardElementPawn":
-
-                selectedFigure = element;
-
-                foreach (var i in cellsList)
-                {
-                    i.DeSelect();
-                    i.Deactivate();
-                }
-                foreach (var i in allFiguresList)
-                {
-                    i.DeSelect();
-                }
-                element.Select();
-                var v = element.Rule.GetPositions(element.x, element.y, PlayersFigures);
-                foreach (var a in cellsList)
-                {
-                    if (v.Contains(a.GetCoordinates()))
-                    {
-                        a.Select();
-                        a.Activate();
-                    }
-                }
+            case "pawn":
+                //Снимаем подсветку с выбранных
+                boardManager.ResetSelected();
+                //Снимаем подсветку с предыдущей активной фигуры
+                playerManager.ResetSelected();
+                //Запоминаем выбранную фигуру
+                playerManager.selectedFigure = figure;
+                //Подсвечиваем выбранную фигуру
+                playerManager.selectedFigure.Select();
+                //Вычисляем координаты куда согласно правилам может сходить фигура
+                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFigures.Keys.ToList());
+                //Подсвечиваем найденный координаты
+                boardManager.Select(cells);
                 break;
-            case "BoardElementCell":
-                foreach (var i in cellsList)
+            //Клетки обычно некликабельны. Если клетка кликабельна - значит выбрана фигура и клетка доступна для перемещения на нее
+            case "cell":
+                //Двигаем фигуру
+                playerManager.MoveFigureTo(figure.GetCoordinates());
+                //Снимаем подсветку с ранее выбранных клеток
+                boardManager.ResetSelected();
+                //Проверям условие победы
+                if (WinCondition())
                 {
-                    i.DeSelect();
-                    i.Deactivate();
+                    //Останавливаем игру
+                    StopGame();
+                    //Флаг окончания игры
+                    Endgame = true;
                 }
-                foreach (var i in allFiguresList)
+                else
                 {
-                    i.DeSelect();
+                    //Следующий игрок
+                    playerManager.ChangePlayer();
+                    //Передаем ход следующему игроку
+                    Refresh();
+                    //Делаем фигуры текущего игрока кликабельными
+                    playerManager.ActivateCurrentPlayer();
                 }
-                (int x, int y) c = element.GetCoordinates();
-                selectedFigure.SetCoordinates(c);
-                selectedFigure.SetTransform(new Vector2((c.x * 2 + 1) * 64, (c.y * 2 + 1) * 64));
-                SwitchPlayer();
                 break;
         }
-        */
     }
 }

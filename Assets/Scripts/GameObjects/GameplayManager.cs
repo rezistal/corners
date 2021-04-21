@@ -1,28 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameplayManager : MonoBehaviour
 {
-    
     [SerializeField]
     private PlayerChoises pch;
-    [SerializeField]
-    private Transform backgroundLayer;
     [SerializeField]
     private Transform cellsLayer;
     [SerializeField]
     private Transform figuresLayer;
+    [SerializeField]
+    private TextMeshProUGUI title;
+    [SerializeField]
+    private GameObject forfeitButton;
 
     private IGameMode gameMode;
-    private Corners gm;
-   
+    private PlayerManager playerManager;
+    private BoardManager boardManager;
+
     public delegate void Figure(BoardElementController element);
 
     private void Manage(BoardElementController element)
     {
-        gm.Manage(element);
+        gameMode.Manage(element);
     }
 
     private void OnEnable()
@@ -35,37 +39,66 @@ public class GameplayManager : MonoBehaviour
         BoardElementController.Clicked -= Manage;
     }
 
-    private GameObject figurePrefab;
-    private GameObject boardPrefab;
-
     void Start()
     {
-        boardPrefab = Resources.Load<GameObject>("Prefabs/Board");
-        figurePrefab = Resources.Load<GameObject>("Prefabs/Figure");
-
-        IRule rule = pch.Rule;
+        playerManager = pch.PlayerManager;
+        boardManager = pch.BoardManager;
         gameMode = pch.GameMode;
 
-        List<IPlayer> players = new List<IPlayer>()
-        {
-            new IPlayer(new BottomRightSC(), Color.black),
-            new IPlayer(new TopLeftSC(), Color.red)
-        };
+        //Заполняем поле фигурами и клетками
+        playerManager.CreatePlayerFiguresAt(figuresLayer);
+        boardManager.CreateBoardAt(cellsLayer);
 
-        PlayerManager = new PlayerManager(players);
-        IBoard board = new ClassicChessBoard();
-        BoardManager = new BoardManager(board);
-
-
-        BoardManager boardManager = new BoardManager(new BoardSC(), new List<Color> { Color.grey, Color.white });
-
-        gm = new Corners(new RuleSteps(), );
-        //gm = new Corners(new RuleSteps(), new BoardClassicChess());
+        ResetGame();
     }
 
     private void Update()
     {
-
+        if (gameMode.Endgame)
+        {
+            title.text = "Победил " + playerManager.CurrentPlayer.Name + "!";
+            title.color = playerManager.CurrentPlayer.Color;
+            forfeitButton.SetActive(false);
+        }
+        else
+        {
+            title.text = "Сейчас ходит " + playerManager.CurrentPlayer.Name;
+            title.color = playerManager.CurrentPlayer.Color;
+        }
     }
 
+    public void Forfeit()
+    {
+        gameMode.StopGame();
+        gameMode.Endgame = true;
+        playerManager.ChangePlayer();
+        forfeitButton.SetActive(false);
+    }
+
+    //Бросаем кубик кто будет ходить первым
+    private IEnumerator RollDice()
+    {
+        yield return new WaitForSeconds(0.2f);
+        playerManager.ChangePlayer();
+        StartCoroutine(RollDice());
+        yield return new WaitForSeconds(2.5f);
+        StopAllCoroutines();
+        forfeitButton.SetActive(true);
+        gameMode.StartGame();
+    }
+
+    public void ResetGame()
+    {
+        StopAllCoroutines();
+        forfeitButton.SetActive(false);
+        gameMode.StopGame();
+        gameMode.Endgame = false;
+        playerManager.SoftReset();
+        StartCoroutine(RollDice());
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
 }

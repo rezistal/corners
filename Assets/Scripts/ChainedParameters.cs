@@ -5,8 +5,12 @@ using UnityEngine;
 public class ChainedParameters<T>
 {
     private LinkedList<T> chain = new LinkedList<T>();
-    private LinkedListNode<T> Pointer;
+    private LinkedListNode<T> pointer;
 
+    public T Current { get => pointer.Value; }
+    public T First { get => chain.First.Value; }
+    public T Last { get => chain.Last.Value; }
+    
     public ChainedParameters(List<T> parameters)
     {
         foreach (T t in parameters)
@@ -14,17 +18,39 @@ public class ChainedParameters<T>
             LinkedListNode<T> node = new LinkedListNode<T>(t);
             chain.AddLast(node);
         }
-        Pointer = chain.Last;
+        pointer = chain.First;
     }
 
-    public T Next()
+    public T GetNext()
     {
-        if (Pointer.Next == null)
+        if (pointer.Next == null)
         {
-            Pointer = chain.First;
-            return Pointer.Value;
+            return chain.First.Value;
         }
-        Pointer = Pointer.Next;
-        return Pointer.Value;
+        return pointer.Next.Value;
+    }
+
+    public void SetNext()
+    {
+        if (pointer.Next != null)
+        {
+            pointer = pointer.Next;
+        }
+        else
+        {
+            pointer = chain.First;
+        }
+
+    }
+
+    public IEnumerable<T> Params()
+    {
+        LinkedListNode<T> localPointer = chain.First;
+        while (localPointer != null)
+        {
+            yield return localPointer.Value;
+            localPointer = localPointer.Next;
+        }
+        yield break;
     }
 }

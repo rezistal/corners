@@ -19,13 +19,18 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     private CanvasGroup canvasGroup;
 
     public Color Color { get => img.color; set => img.color = value; }
+    public string ElementName { get => element.Name; }
 
     public IBoardElement element;
-    public IRule Rule;
+    public IRule Rule { get => element.Rule; set => element.Rule = value; }
 
     private void Awake()
     {
         element = gameObject.GetComponent<IBoardElement>();
+    }
+
+    private void Start()
+    {
 
     }
 
@@ -76,8 +81,8 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
         element.Select();
     }
 
-    public void DeSelect()
+    public void Deselect()
     {
-        element.DeSelect();
+        element.Deselect();
     }
 }

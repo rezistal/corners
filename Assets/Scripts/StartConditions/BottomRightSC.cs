@@ -8,9 +8,9 @@ public class BottomRightSC : IStartCondition
     {
         return new List<(int x, int y)>
         {
-            (1,8),(2,8),(3,8),
-            (1,7),(2,7),(3,7),
-            (1,6),(2,6),(3,6),
+            (6,3),(7,3),(8,3),
+            (6,2),(7,2),(8,2),
+            (6,1),(7,1),(8,1),
         };
     }
 }

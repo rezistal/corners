@@ -5,5 +5,7 @@ using UnityEngine;
 public interface IBoardElement
 { 
     void Select();
-    void DeSelect();
+    void Deselect();
+    string Name { get; }
+    IRule Rule { get; set; }
 }
