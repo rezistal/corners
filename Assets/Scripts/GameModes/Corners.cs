@@ -22,7 +22,7 @@ public class Corners : IGameMode
     public void StartGame()
     {
         //В этой игре все фигуры двигаются по одному выбранному игроками правилу. Применяем его к каждой фигуре
-        foreach (BoardElementController bec in playerManager.AllFigures.Values.ToList())
+        foreach (BoardElementController bec in playerManager.AllFiguresValues)
         {
             bec.Rule = rule;
         }
@@ -40,7 +40,7 @@ public class Corners : IGameMode
     private bool WinCondition()
     {
         //return true;
-        List<(int, int)> currentPlayerFiguresPositions = playerManager.CurrentPlayer.Figures.Keys.ToList();
+        List<(int, int)> currentPlayerFiguresPositions = playerManager.CurrentPlayer.FiguresKeys;
         List<(int, int)> opponentFiguresStartPositions = playerManager.NextPlayer.StartCondition;
 
         foreach (var v in currentPlayerFiguresPositions)
@@ -75,7 +75,7 @@ public class Corners : IGameMode
                 //Подсвечиваем выбранную фигуру
                 playerManager.selectedFigure.Select();
                 //Вычисляем координаты куда согласно правилам может сходить фигура
-                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFigures.Keys.ToList());
+                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys);
                 //Подсвечиваем найденный координаты
                 boardManager.Select(cells);
                 break;

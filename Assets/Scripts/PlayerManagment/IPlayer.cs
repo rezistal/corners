@@ -4,7 +4,8 @@ using UnityEngine;
 
 public interface IPlayer
 {
-    Dictionary<(int x, int y), BoardElementController> Figures { get; }
+    List<(int x, int y)> FiguresKeys { get; }
+    List<BoardElementController> FiguresValues { get; }
     List<(int x, int y)> StartCondition { get; }
     GameObject Prefab { get; }
     string Name { get; }

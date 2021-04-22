@@ -5,7 +5,7 @@ using UnityEngine;
 public class BoardManager
 {
     public Dictionary<(int x, int y), BoardElementController> Figures;
-    public Dictionary<(int x, int y), BoardElementController> ActiveFigures;
+    public List<BoardElementController> ActiveFigures;
     private IBoard Board;
 
     public void ResetBoard()
@@ -19,7 +19,7 @@ public class BoardManager
 
     public void ResetSelected()
     {
-        foreach (BoardElementController b in ActiveFigures.Values)
+        foreach (BoardElementController b in ActiveFigures)
         {
             b.Deactivate();
             b.Deselect();
@@ -35,7 +35,7 @@ public class BoardManager
             {
                 Figures[c].Activate();
                 Figures[c].Select();
-                ActiveFigures.Add(c, Figures[c]);
+                ActiveFigures.Add(Figures[c]);
             }
         }
     }
@@ -44,7 +44,7 @@ public class BoardManager
     {
         Board = board;
         Figures = new Dictionary<(int x, int y), BoardElementController>();
-        ActiveFigures = new Dictionary<(int x, int y), BoardElementController>();
+        ActiveFigures = new List<BoardElementController>();
     }
 
     public void CreateBoardAt(Transform parent)

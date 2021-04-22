@@ -8,21 +8,21 @@ public class BoardElementCell : MonoBehaviour, IBoardElement
     [SerializeField]
     private BoardElementController controller;
     [SerializeField]
-    private GameObject hightlight;
+    private GameObject highlight;
 
     private void Start()
     {
-        hightlight.SetActive(false);
+        highlight.SetActive(false);
     }
 
     public void Select()
     {
-        hightlight.SetActive(true);
+        highlight.SetActive(true);
     }
 
     public void Deselect()
     {
-        hightlight.SetActive(false);
+        highlight.SetActive(false);
     }
 
     public string Name { get => "cell"; }

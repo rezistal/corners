@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class ChainedParameters<T>
 {
@@ -43,14 +44,17 @@ public class ChainedParameters<T>
 
     }
 
-    public IEnumerable<T> Params()
+    public IEnumerable<T> Params
     {
-        LinkedListNode<T> localPointer = chain.First;
-        while (localPointer != null)
+        get
         {
-            yield return localPointer.Value;
-            localPointer = localPointer.Next;
+            LinkedListNode<T> localPointer = chain.First;
+            while (localPointer != null)
+            {
+                yield return localPointer.Value;
+                localPointer = localPointer.Next;
+            }
+            yield break;
         }
-        yield break;
     }
 }

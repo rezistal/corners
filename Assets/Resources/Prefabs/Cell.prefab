@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 790778252157765762}
-  hightlight: {fileID: 396003493702299350}
+  highlight: {fileID: 396003493702299350}
 --- !u!222 &790778252157765760
 CanvasRenderer:
   m_ObjectHideFlags: 0

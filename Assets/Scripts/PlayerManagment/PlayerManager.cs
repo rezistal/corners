@@ -1,13 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class PlayerManager
 {
     public BoardElementController selectedFigure;
-    public Dictionary<(int x, int y), BoardElementController> AllFigures { get; set; }
+    public List<(int x, int y)> AllFiguresKeys
+    {
+        get
+        {
+            List<(int x, int y)> tl = new List<(int x, int y)>();
+            foreach (IPlayer p in playersChain.Params)
+            {
+                tl.AddRange(p.FiguresKeys);
+            }
+            return tl;
+        }
+    }
+    public List<BoardElementController> AllFiguresValues
+    {
+        get
+        {
+            List<BoardElementController> bl = new List<BoardElementController>();
+            foreach (IPlayer p in playersChain.Params)
+            {
+                bl.AddRange(p.FiguresValues);
+            }
+            return bl;
+        }
+    }
     private Dictionary<(int x, int y), BoardElementController> StartPositions;
-
     private ChainedParameters<IPlayer> playersChain;
 
     public IPlayer CurrentPlayer { get => playersChain.Current; }
@@ -20,7 +43,7 @@ public class PlayerManager
 
     public void DeactivateAll()
     {
-        foreach (BoardElementController b in AllFigures.Values)
+        foreach (BoardElementController b in AllFiguresValues)
         {
             b.Deactivate();
             b.Deselect();
@@ -29,7 +52,7 @@ public class PlayerManager
 
     public void ActivateCurrentPlayer()
     {
-        foreach(BoardElementController b in playersChain.Current.Figures.Values)
+        foreach(BoardElementController b in playersChain.Current.FiguresValues)
         {
             b.Activate();
         }
@@ -45,14 +68,10 @@ public class PlayerManager
 
     public void MoveFigureTo((int x, int y) coords)
     {
-        //Убираем старые координаты из списка всех фигур
-        AllFigures.Remove(selectedFigure.GetCoordinates());
-        //Добавляем новые координаты
-        AllFigures.Add(coords, selectedFigure);
         //Убираем старые координаты из списка фигур активного игрока
-        CurrentPlayer.Figures.Remove(selectedFigure.GetCoordinates());
+        CurrentPlayer.FiguresKeys.Remove(selectedFigure.GetCoordinates());
         //Добавляем новые координаты
-        CurrentPlayer.Figures.Add(coords, selectedFigure);
+        CurrentPlayer.FiguresKeys.Add(coords);
         //Меняем координаты фигуры
         selectedFigure.SetCoordinates(coords);
         //Перемещаем фигуру по полю
@@ -65,8 +84,8 @@ public class PlayerManager
 
     public PlayerManager(List<IPlayer> players)
     {
-        AllFigures = new Dictionary<(int x, int y), BoardElementController>();
         playersChain = new ChainedParameters<IPlayer>(players);
+        StartPositions = new Dictionary<(int x, int y), BoardElementController>();
     }
 
     public void SoftReset()
@@ -77,21 +96,19 @@ public class PlayerManager
             v.Value.SetCoordinates(v.Key);
             v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
         }
-        AllFigures = new Dictionary<(int x, int y), BoardElementController>(StartPositions);
-
-        foreach (IPlayer player in playersChain.Params())
+        foreach (IPlayer player in playersChain.Params)
         {
-            player.Figures.Clear();
+            player.FiguresKeys.Clear();
             foreach ((int x, int y) in player.StartCondition)
             {
-                player.Figures.Add((x, y), AllFigures[(x,y)]);
+                player.FiguresKeys.Add((x, y));
             }
         }
     }
     
     public void CreatePlayerFiguresAt(Transform parent)
     {
-        foreach (IPlayer player in playersChain.Params())
+        foreach (IPlayer player in playersChain.Params)
         {
             foreach ((int x, int y) in player.StartCondition)
             {
@@ -105,10 +122,10 @@ public class PlayerManager
                 bec.Select();
                 bec.Deselect();
 
-                player.Figures.Add((x, y), bec);
-                AllFigures.Add((x, y), bec);
+                player.FiguresKeys.Add((x, y));
+                player.FiguresValues.Add(bec);
+                StartPositions.Add((x, y), bec);
             }
         }
-        StartPositions = new Dictionary<(int x, int y), BoardElementController>(AllFigures);
     }
 }
