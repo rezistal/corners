@@ -2,57 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlayer
-{
-    Dictionary<(int x, int y), BoardElementController> Figures { get; }
-    List<(int x, int y)> StartCondition { get; }
-    GameObject Prefab { get; }
-    string Name { get; }
-    Color Color { get; }
-}
-
-public class RealPlayer : IPlayer
-{
-    public Dictionary<(int x, int y), BoardElementController> Figures { get; }
-    public List<(int x, int y)> StartCondition { get; }
-    public GameObject Prefab { get; }
-    public string Name { get; }
-    public Color Color { get; }
-
-    public RealPlayer(IStartCondition startCondition, Color color, string name)
-    {
-        StartCondition = startCondition.GetConditions();
-        Color = color;
-        Figures = new Dictionary<(int x, int y), BoardElementController>();
-        Prefab = Resources.Load<GameObject>("Prefabs/Figure");
-        Name = name;
-    }
-}
-
-public class AIPlayer : IPlayer
-{
-    public Dictionary<(int x, int y), BoardElementController> Figures { get; }
-
-    public List<(int x, int y)> StartCondition{ get; }
-
-    public GameObject Prefab { get; }
-
-    public Color Color { get => Color.magenta; }
-
-    public string Name { get => "AI"; }
-
-    public AIPlayer()
-    {
-        Figures = new Dictionary<(int x, int y), BoardElementController>();
-        StartCondition = new BottomRightSC().GetConditions();
-        Prefab = Resources.Load<GameObject>("Prefabs/Figure");
-    }
-}
-
 public class PlayerManager
 {
     public BoardElementController selectedFigure;
-    public Dictionary<(int x, int y), BoardElementController> AllFigures { get; }
+    public Dictionary<(int x, int y), BoardElementController> AllFigures { get; set; }
     private Dictionary<(int x, int y), BoardElementController> StartPositions;
 
     private ChainedParameters<IPlayer> playersChain;
@@ -118,10 +71,21 @@ public class PlayerManager
 
     public void SoftReset()
     {
+        selectedFigure = null;
         foreach (var v in StartPositions)
         {
             v.Value.SetCoordinates(v.Key);
             v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
+        }
+        AllFigures = new Dictionary<(int x, int y), BoardElementController>(StartPositions);
+
+        foreach (IPlayer player in playersChain.Params())
+        {
+            player.Figures.Clear();
+            foreach ((int x, int y) in player.StartCondition)
+            {
+                player.Figures.Add((x, y), AllFigures[(x,y)]);
+            }
         }
     }
     

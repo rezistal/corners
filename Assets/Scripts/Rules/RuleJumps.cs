@@ -24,8 +24,22 @@ public class RuleJumps : IRule
                 result.Add(emptySlots);
             }
         }
-
-        return result;
+        if (result.Any())
+        {
+            for(int i = result.Count-1; i >=0; i--)
+            {
+                int tx = result.ElementAt(i).x;
+                int ty = result.ElementAt(i).y;
+                boardState.Add((tx, ty));
+                result.AddRange(GetPositions(tx, ty, boardState));
+            }
+            return result;
+        }
+        else
+        {
+            return new List<(int x, int y)>();
+        }
+        
     }
     
 }

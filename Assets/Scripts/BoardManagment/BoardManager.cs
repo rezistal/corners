@@ -2,43 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IBoard
-{
-    List<(int x, int y)> StartCondition { get; }
-    GameObject Prefab { get; }
-    Color GetCellColor(int x, int y);
-}
-
-public class ClassicChessBoard : IBoard
-{
-    //private ChainedParameters<Color> colors;
-    public List<(int x, int y)> StartCondition { get; }
-    public GameObject Prefab { get; }
-
-    public ClassicChessBoard()
-    {
-        Prefab = Resources.Load<GameObject>("Prefabs/Cell");
-        StartCondition = new BoardSC().GetConditions();
-        /*
-        List<Color> colorsList = new List<Color>()
-        {
-            Color.grey,
-            Color.white
-        };
-        colors = new ChainedParameters<Color>(colorsList);
-        */
-    }
-
-    public Color GetCellColor(int x, int y)
-    {
-        if ((x + y) % 2 == 0)
-        {
-            return Color.grey;
-        }
-        return Color.white;
-    }
-}
-
 public class BoardManager
 {
     public Dictionary<(int x, int y), BoardElementController> Figures;
