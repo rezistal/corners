@@ -23,32 +23,20 @@ public class GameplayManager : MonoBehaviour
     private BoardManager boardManager;
     private InterfaceAI ai;
 
+    public delegate void AI();
     public delegate void Figure(BoardElementController element);
-    public delegate void Choice(BoardElementController element, (int x, int y) coords);
 
     private void Manage(BoardElementController element)
     {
         gameMode.Manage(element);
     }
 
-    private void AIManage(BoardElementController element, (int x, int y) coords)
+    private void ManageAI()
     {
-        StartCoroutine(AITurnStepOne(element));
-        StartCoroutine(AITurnStepTwo(coords));
+        (BoardElementController element, (int x, int y) coords) = ai.Calculations();
+        StartCoroutine(gameMode.ManageAI(element, coords));
     }
 
-    private IEnumerator AITurnStepOne(BoardElementController element)
-    {
-        gameMode.Manage(element);
-        yield return new WaitForSeconds(0.25f);
-    }
-
-    private IEnumerator AITurnStepTwo((int x, int y) coords)
-    {
-        yield return new WaitForSeconds(0.5f);
-        gameMode.Manage(boardManager.Figures[coords]);
-        StopAllCoroutines();
-    }
     private void Awake()
     {
         playerManager = pch.PlayerManager;
@@ -59,14 +47,13 @@ public class GameplayManager : MonoBehaviour
     private void OnEnable()
     {
         BoardElementController.Clicked += Manage;
-        ai.Declare += AIManage;
-
+        PlayerManager.ActivateAI += ManageAI;
     }
 
     private void OnDisable()
     {
         BoardElementController.Clicked -= Manage;
-        ai.Declare -= AIManage;
+        PlayerManager.ActivateAI -= ManageAI;
     }
 
     void Start()
@@ -90,6 +77,14 @@ public class GameplayManager : MonoBehaviour
         {
             title.text = "Сейчас ходит " + playerManager.CurrentPlayer.Name;
             title.color = playerManager.CurrentPlayer.Color;
+            if(playerManager.CurrentPlayer.GetType().ToString() == "AIPlayer")
+            {
+                forfeitButton.SetActive(false);
+            }
+            else
+            {
+                forfeitButton.SetActive(true);
+            }
         }
     }
 

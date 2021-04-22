@@ -7,7 +7,7 @@ public class AIPlayer : IPlayer
 {
     public List<(int x, int y)> StartCondition { get; }
     public GameObject Prefab { get; }
-    public Color Color { get => Color.magenta; }
+    public Color Color { get => Color.blue; }
     public string Name { get => "AI"; }
     public List<BoardElementController> FiguresValues { get; }
     public List<(int x, int y)> FiguresKeys

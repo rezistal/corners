@@ -61,6 +61,7 @@ public class Corners : IGameMode
         playerManager.DeactivateAll();
     }
 
+    //Ход игры для игроков
     public void Manage(BoardElementController figure)
     {
         switch (figure.ElementName)
@@ -72,44 +73,57 @@ public class Corners : IGameMode
                 playerManager.Select(figure);
                 //Вычисляем координаты куда согласно правилам может сходить фигура
                 List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
-                //Подсвечиваем найденный координаты
+                //Подсвечиваем найденные координаты
                 boardManager.Select(cells);
                 break;
             //Клетки обычно некликабельны. Если клетка кликабельна - значит выбрана фигура и клетка доступна для перемещения на нее
             case "cell":
-                Debug.Log(playerManager.CurrentPlayer.Name
-                    + " moves ("
-                    + playerManager.selectedFigure.GetCoordinates().x
-                    + ","
-                    + playerManager.selectedFigure.GetCoordinates().y
-                    + ") to ("
-                    + figure.GetCoordinates().x
-                    + ","
-                    + figure.GetCoordinates().y
-                    + ")"
-                    );
                 //Двигаем фигуру
                 playerManager.MoveFigureTo(figure.GetCoordinates());
                 //Снимаем подсветку с ранее выбранных клеток
                 boardManager.ResetSelected();
                 //Проверям условие победы
-                if (WinCondition())
-                {
-                    //Останавливаем игру
-                    StopGame();
-                    //Флаг окончания игры
-                    Endgame = true;
-                }
-                else
-                {
-                    //Следующий игрок
-                    playerManager.ChangePlayer();
-                    //Передаем ход следующему игроку
-                    Refresh();
-                    //Делаем фигуры текущего игрока кликабельными
-                    playerManager.ActivateCurrentPlayer();
-                }
+                CheckWin();
                 break;
+        }
+    }
+
+    //Ход игры для AI
+    public IEnumerator ManageAI(BoardElementController figure, (int x, int y) cell)
+    {
+        yield return new WaitForSeconds(0.8f);
+        //Запоминаем и подсвечиваем выбранную фигуру
+        playerManager.Select(figure);
+        yield return new WaitForSeconds(0.8f);
+        //Подсвечиваем выбранную координату
+        boardManager.Figures[cell].Select();
+        yield return new WaitForSeconds(0.8f);
+        //Двигаем фигуру
+        playerManager.MoveFigureTo(cell);
+        yield return new WaitForSeconds(0.8f);
+        //Снимаем подсветку с ранее выбранной клетки
+        boardManager.Figures[cell].Deselect();
+        //Проверям условие победы
+        CheckWin();
+    }
+
+    private void CheckWin()
+    {
+        if (WinCondition())
+        {
+            //Останавливаем игру
+            StopGame();
+            //Флаг окончания игры
+            Endgame = true;
+        }
+        else
+        {
+            //Следующий игрок
+            playerManager.ChangePlayer();
+            //Передаем ход следующему игроку
+            Refresh();
+            //Делаем фигуры текущего игрока кликабельными
+            playerManager.ActivateCurrentPlayer();
         }
     }
 }

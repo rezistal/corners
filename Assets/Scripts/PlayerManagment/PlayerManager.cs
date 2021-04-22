@@ -7,8 +7,8 @@ public class PlayerManager
 {
     private Dictionary<(int x, int y), BoardElementController> StartPositions;
     private ChainedParameters<IPlayer> playersChain;
-    private InterfaceAI computerPlayer;
 
+    public static event GameplayManager.AI ActivateAI;
     public BoardElementController selectedFigure { get; private set; }
     public IPlayer CurrentPlayer { get => playersChain.Current; }
     public IPlayer NextPlayer { get => playersChain.GetNext(); }
@@ -37,11 +37,10 @@ public class PlayerManager
         }
     }
 
-    public PlayerManager(List<IPlayer> players, InterfaceAI computerPlayer)
+    public PlayerManager(List<IPlayer> players)
     {
         playersChain = new ChainedParameters<IPlayer>(players);
         StartPositions = new Dictionary<(int x, int y), BoardElementController>();
-        this.computerPlayer = computerPlayer;
     }
 
     //Выбор следующего игрока
@@ -65,7 +64,7 @@ public class PlayerManager
     {
         if (playersChain.Current.GetType().ToString() == "AIPlayer")
         {
-            computerPlayer.MakeTurn(playersChain.Current.FiguresValues, AllFiguresKeys);
+            ActivateAI();
         }
         else
         {

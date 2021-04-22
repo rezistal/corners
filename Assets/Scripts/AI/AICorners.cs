@@ -5,14 +5,15 @@ using System.Linq;
 
 public class AICorners : InterfaceAI
 {
-    public event GameplayManager.Choice Declare;
     private Dictionary<(int x, int y), int> DecisionMatrix;
-    private int boardSize; 
+    private PlayerManager playerManager;
+    private BoardManager boardManager;
 
-    public AICorners(IBoard board)
+    public AICorners(PlayerManager playerManager, BoardManager boardManager)
     {
-        boardSize = board.Size;
-        List<(int x, int y)> keys = board.StartCondition;
+        this.playerManager = playerManager;
+        this.boardManager = boardManager;
+        List<(int x, int y)> keys = boardManager.Board.StartCondition;
         List<int> values = new List<int>()
         {
             1008, 962, 912, 800,   720, 613, 492, 357,
@@ -27,25 +28,25 @@ public class AICorners : InterfaceAI
         DecisionMatrix = keys.Select((k, i) => new { k, v = values[i] }).ToDictionary(x => x.k, x => x.v);
     }
 
-
-    public void MakeTurn(List<BoardElementController> figures, List<(int x, int y)> allFigures)
+    public (BoardElementController element, (int x, int y) coords) Calculations()
     {
         Dictionary<BoardElementController, (int val, (int x, int y) coords)> figuresMax =
             new Dictionary<BoardElementController, (int, (int x, int y))>();
 
         int currentSum = 0;
-        foreach (BoardElementController figure in figures)
+        foreach (BoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
         {
+            //Текущая сумма по всем клеткам
             currentSum += DecisionMatrix[figure.GetCoordinates()];
-
-            List<(int x, int y)> boardState = new List<(int x, int y)>(allFigures);
-            List<(int x, int y)> cells = figure.Rule.GetPositions(figure.x, figure.y, boardState, boardSize);
+            //Доступные фигуре для перемещения клетки
+            List<(int x, int y)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
 
             figuresMax.Add(figure, (0, (0, 0)));
             foreach ((int x, int y) cell in cells)
             {
                 if (DecisionMatrix.ContainsKey(cell) && DecisionMatrix[cell] > figuresMax[figure].val)
                 {
+                    //Для фигуры запоминаем клетку с максимальным приоритетом
                     figuresMax[figure] = (DecisionMatrix[cell], cell);
                 }
             }
@@ -54,18 +55,21 @@ public class AICorners : InterfaceAI
         (int x, int y) selectedCell = figuresMax.First().Value.coords;
 
         int max = 0;
-        foreach (BoardElementController figure in figures)
+        foreach (BoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
         {
+            //Перевычисляем сумму для всех фигур с учетом того куда они бы сходили
             int calculated_sum = currentSum - DecisionMatrix[figure.GetCoordinates()] + figuresMax[figure].val;
             if (calculated_sum > max)
             {
+                //Выбираем ту фигуру, влияние которой на итоговую сумму всех фигур будет максимальным
                 max = calculated_sum;
                 selectedFigure = figure;
                 selectedCell = figuresMax[figure].coords;
             }
         }
 
-        Declare(selectedFigure, selectedCell);
+        //Выбранная AI фигура и клетка
+        return (selectedFigure, selectedCell);
     }
 }
 

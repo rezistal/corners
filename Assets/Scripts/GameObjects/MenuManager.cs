@@ -135,11 +135,12 @@ public class MenuManager : MonoBehaviour
                 players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
                 break;
         }
+        pch.PlayerManager = new PlayerManager(players);
+
         IBoard board = new ClassicChessBoard();
         pch.BoardManager = new BoardManager(board);
-
-        pch.ai = new AICorners(board);
-        pch.PlayerManager = new PlayerManager(players, pch.ai);
+        
+        pch.ai = new AICorners(pch.PlayerManager, pch.BoardManager);
 
         pch.GameMode = new Corners(pch.Rule, pch.BoardManager, pch.PlayerManager);
 

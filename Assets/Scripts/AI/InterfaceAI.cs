@@ -4,6 +4,5 @@ using UnityEngine;
 
 public interface InterfaceAI
 {
-    void MakeTurn(List<BoardElementController> figures, List<(int x, int y)> allFigures);
-    event GameplayManager.Choice Declare;
+    (BoardElementController element, (int x, int y) coords) Calculations();
 }

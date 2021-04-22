@@ -20,4 +20,9 @@ public class Chess : IGameMode
     {
         throw new System.NotImplementedException();
     }
+
+    public IEnumerator ManageAI(BoardElementController element, (int x, int y) coords)
+    {
+        throw new System.NotImplementedException();
+    }
 }
