@@ -21,30 +21,56 @@ public class GameplayManager : MonoBehaviour
     private IGameMode gameMode;
     private PlayerManager playerManager;
     private BoardManager boardManager;
+    private InterfaceAI ai;
 
     public delegate void Figure(BoardElementController element);
+    public delegate void Choice(BoardElementController element, (int x, int y) coords);
 
     private void Manage(BoardElementController element)
     {
         gameMode.Manage(element);
     }
 
+    private void AIManage(BoardElementController element, (int x, int y) coords)
+    {
+        StartCoroutine(AITurnStepOne(element));
+        StartCoroutine(AITurnStepTwo(coords));
+    }
+
+    private IEnumerator AITurnStepOne(BoardElementController element)
+    {
+        gameMode.Manage(element);
+        yield return new WaitForSeconds(0.2f);
+    }
+
+    private IEnumerator AITurnStepTwo((int x, int y) coords)
+    {
+        yield return new WaitForSeconds(0.4f);
+        gameMode.Manage(boardManager.Figures[coords]);
+        StopAllCoroutines();
+    }
+    private void Awake()
+    {
+        playerManager = pch.PlayerManager;
+        boardManager = pch.BoardManager;
+        gameMode = pch.GameMode;
+        ai = pch.ai;
+    }
     private void OnEnable()
     {
         BoardElementController.Clicked += Manage;
+        ai.Declare += AIManage;
+
     }
 
     private void OnDisable()
     {
         BoardElementController.Clicked -= Manage;
+        ai.Declare -= AIManage;
     }
 
     void Start()
     {
-        playerManager = pch.PlayerManager;
-        boardManager = pch.BoardManager;
-        gameMode = pch.GameMode;
-
         //Заполняем поле фигурами и клетками
         playerManager.CreatePlayerFiguresAt(figuresLayer);
         boardManager.CreateBoardAt(cellsLayer);

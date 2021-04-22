@@ -6,8 +6,10 @@ public class BoardElementPawn : MonoBehaviour, IBoardElement
 {
     [SerializeField]
     private BoardElementController controller;
-    [SerializeField]
+
     private Color oldColor;
+    public string Name { get => "pawn"; }
+    public IRule Rule { get; set; }
 
     public void Select()
     {
@@ -20,7 +22,5 @@ public class BoardElementPawn : MonoBehaviour, IBoardElement
         controller.Color = oldColor;
     }
 
-    public string Name { get => "pawn"; }
 
-    public IRule Rule { get; set; }
 }

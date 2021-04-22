@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class BoardManager
 {
-    public Dictionary<(int x, int y), BoardElementController> Figures;
-    public List<BoardElementController> ActiveFigures;
+    public Dictionary<(int x, int y), BoardElementController> Figures { get; }
+    public List<BoardElementController> ActiveFigures { get; }
     private IBoard Board;
 
+    public BoardManager(IBoard board)
+    {
+        Board = board;
+        Figures = new Dictionary<(int x, int y), BoardElementController>();
+        ActiveFigures = new List<BoardElementController>();
+    }
+
+    //Все клетки не выделены и не кликабельны
     public void ResetBoard()
     {
         foreach (BoardElementController b in Figures.Values)
@@ -17,6 +25,7 @@ public class BoardManager
         }
     }
 
+    //Снимаем выделение и кликабельность с ранее выбранных клеток
     public void ResetSelected()
     {
         foreach (BoardElementController b in ActiveFigures)
@@ -27,6 +36,7 @@ public class BoardManager
         ActiveFigures.Clear();
     }
 
+    //Выеделяем и делаем кликабельными клетки по координатам
     public void Select(List<(int x, int y)> cells)
     {
         foreach((int x, int y) c in cells)
@@ -40,13 +50,7 @@ public class BoardManager
         }
     }
 
-    public BoardManager(IBoard board)
-    {
-        Board = board;
-        Figures = new Dictionary<(int x, int y), BoardElementController>();
-        ActiveFigures = new List<BoardElementController>();
-    }
-
+    //Размещаем клетки в игре
     public void CreateBoardAt(Transform parent)
     {
         foreach ((int x, int y) in Board.StartCondition)

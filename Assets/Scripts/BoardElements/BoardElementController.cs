@@ -6,32 +6,26 @@ using UnityEngine.EventSystems;
 
 public class BoardElementController : MonoBehaviour, IPointerClickHandler
 {
-    public int x;
-    public int y;
-
-    public static event GameplayManager.Figure Clicked;
-
     [SerializeField]
     private Image img;
     [SerializeField]
     private RectTransform rectTransform;
     [SerializeField]
     private CanvasGroup canvasGroup;
+    private IBoardElement element;
 
+    public int x { get; private set; }
+    public int y { get; private set; }
+
+    public IRule Rule { get => element.Rule; set => element.Rule = value; }
     public Color Color { get => img.color; set => img.color = value; }
     public string ElementName { get => element.Name; }
-
-    public IBoardElement element;
-    public IRule Rule { get => element.Rule; set => element.Rule = value; }
+    
+    public static event GameplayManager.Figure Clicked;
 
     private void Awake()
     {
         element = gameObject.GetComponent<IBoardElement>();
-    }
-
-    private void Start()
-    {
-
     }
 
     public void SetSprite(Sprite s)
@@ -53,12 +47,6 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     public void SetTransform(Vector2 v)
     {
         rectTransform.localPosition = v;
-    }
-
-    public void SetState(bool state)
-    {
-        canvasGroup.blocksRaycasts = state;
-        //element.SetActive();
     }
 
     public void Activate()

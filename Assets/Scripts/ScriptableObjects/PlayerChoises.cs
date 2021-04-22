@@ -9,6 +9,7 @@ public class PlayerChoises : ScriptableObject
     public IGameMode GameMode { get; set; }
     public PlayerManager PlayerManager { get; set; }
     public BoardManager BoardManager { get; set; }
+    public InterfaceAI ai { get; set; }
 
     private void OnEnable()
     {

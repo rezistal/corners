@@ -11,15 +11,20 @@ public class MenuManager : MonoBehaviour
     [SerializeField]
     private Canvas chooseGame;
     [SerializeField]
-    private Canvas cornersOptions;
+    private Canvas cornersRulesOptions;
     [SerializeField]
-    private Dropdown ruleOptions;
-    [SerializeField]
-    private Dropdown modeOptions;
+    private Canvas cornersModesOptions;
+
     [SerializeField]
     private Canvas cornersOptionsPVP;
     [SerializeField]
     private Canvas cornersOptionsPVE;
+
+    [SerializeField]
+    private Dropdown ruleOptions;
+    [SerializeField]
+    private Dropdown modeOptions;
+
     [SerializeField]
     private InputField firstNamePVP;
     [SerializeField]
@@ -30,17 +35,18 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         chooseGame.gameObject.SetActive(true);
-        cornersOptions.gameObject.SetActive(false);
+        cornersRulesOptions.gameObject.SetActive(false);
+        cornersModesOptions.gameObject.SetActive(false);
         cornersOptionsPVP.gameObject.SetActive(false);
         cornersOptionsPVE.gameObject.SetActive(false);
     }
 
-    public void Corners()
+    private void Update()
     {
-        chooseGame.gameObject.SetActive(false);
-        cornersOptions.gameObject.SetActive(true);
+
     }
 
+    #region Mainmenu
     public void Chess()
     {
 
@@ -51,15 +57,44 @@ public class MenuManager : MonoBehaviour
 
     }
 
+    public void Corners()
+    {
+        chooseGame.gameObject.SetActive(false);
+        cornersRulesOptions.gameObject.SetActive(true);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+    #endregion Mainmenu
+
+    #region RulesOption
+    public void CornersRulesOptions()
+    {
+        cornersRulesOptions.gameObject.SetActive(false);
+        switch (ruleOptions.value)
+        {
+            case 0:
+            case 1:
+                cornersOptionsPVP.gameObject.SetActive(true);
+                break;
+            case 2:
+                cornersModesOptions.gameObject.SetActive(true);
+                break;
+        }
+    }
+
     public void BackToMenu()
     {
         chooseGame.gameObject.SetActive(true);
-        cornersOptions.gameObject.SetActive(false);
+        cornersRulesOptions.gameObject.SetActive(false);
     }
+    #endregion RulesOption
 
-    public void NextCornersOptions()
+    public void CornersModesOptions()
     {
-        cornersOptions.gameObject.SetActive(false);
+        cornersModesOptions.gameObject.SetActive(false);
         switch (modeOptions.value)
         {
             case 0:
@@ -71,21 +106,30 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void BackToCornersOptions()
+    public void BackToCornersRulesOptions()
     {
+        cornersRulesOptions.gameObject.SetActive(true);
         cornersOptionsPVP.gameObject.SetActive(false);
+        cornersModesOptions.gameObject.SetActive(false);
+    }
+
+    public void BackToCornersModesOptions()
+    {
+        cornersModesOptions.gameObject.SetActive(true);
         cornersOptionsPVE.gameObject.SetActive(false);
-        cornersOptions.gameObject.SetActive(true);
     }
 
     public void StartCorners()
     {
+        int mode = modeOptions.value;
         switch (ruleOptions.value)
         {
             case 0:
+                mode = 0;
                 pch.Rule = new RuleDraughts();
                 break;
             case 1:
+                mode = 0;
                 pch.Rule = new RuleJumps();
                 break;
             case 2:
@@ -94,7 +138,7 @@ public class MenuManager : MonoBehaviour
         }
 
         List<IPlayer> players = new List<IPlayer>();
-        switch (modeOptions.value)
+        switch (mode)
         {
             case 0:
                 players.Add(new RealPlayer(new BottomRightSC(), Color.black, firstNamePVP.text));
@@ -105,7 +149,8 @@ public class MenuManager : MonoBehaviour
                 players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
                 break;
         }
-        pch.PlayerManager = new PlayerManager(players);
+        pch.ai = new AICorners();
+        pch.PlayerManager = new PlayerManager(players, pch.ai);
 
         IBoard board = new ClassicChessBoard();
         pch.BoardManager = new BoardManager(board);
@@ -115,8 +160,5 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("GameplayScene");
     }
 
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
+
 }

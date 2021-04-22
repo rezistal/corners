@@ -5,7 +5,13 @@ using System.Linq;
 
 public class PlayerManager
 {
-    public BoardElementController selectedFigure;
+    private Dictionary<(int x, int y), BoardElementController> StartPositions;
+    private ChainedParameters<IPlayer> playersChain;
+    private InterfaceAI computerPlayer;
+    private BoardElementController selectedFigure;
+
+    public IPlayer CurrentPlayer { get => playersChain.Current; }
+    public IPlayer NextPlayer { get => playersChain.GetNext(); }
     public List<(int x, int y)> AllFiguresKeys
     {
         get
@@ -30,17 +36,21 @@ public class PlayerManager
             return bl;
         }
     }
-    private Dictionary<(int x, int y), BoardElementController> StartPositions;
-    private ChainedParameters<IPlayer> playersChain;
 
-    public IPlayer CurrentPlayer { get => playersChain.Current; }
-    public IPlayer NextPlayer { get => playersChain.GetNext(); }
+    public PlayerManager(List<IPlayer> players, InterfaceAI computerPlayer)
+    {
+        playersChain = new ChainedParameters<IPlayer>(players);
+        StartPositions = new Dictionary<(int x, int y), BoardElementController>();
+        this.computerPlayer = computerPlayer;
+    }
 
+    //Выбор следующего игрока
     public void ChangePlayer()
     {
         playersChain.SetNext();
     }
 
+    //Блокировка всех фигур и снятие с них выделения
     public void DeactivateAll()
     {
         foreach (BoardElementController b in AllFiguresValues)
@@ -50,28 +60,38 @@ public class PlayerManager
         }
     }
 
+    //Передаем управление AIPlayer или делаем фигуры текущего игрока кликабельными
     public void ActivateCurrentPlayer()
     {
-        foreach(BoardElementController b in playersChain.Current.FiguresValues)
+        if (playersChain.Current.GetType().ToString() == "AIPlayer")
         {
-            b.Activate();
+            computerPlayer.MakeTurn(playersChain.Current.FiguresValues, AllFiguresKeys);
+        }
+        else
+        {
+            foreach (BoardElementController b in playersChain.Current.FiguresValues)
+            {
+                b.Activate();
+            }
         }
     }
 
-    public void ResetSelected()
+    //Запоминаем и подсвечиваем выбранную фигуру
+    public void Select(BoardElementController figure)
     {
-        if(selectedFigure != null)
+        //Снимаем старое выделение
+        if (selectedFigure != null)
         {
             selectedFigure.Deselect();
         }
+
+        selectedFigure = figure;
+        selectedFigure.Select();
     }
 
+    //Перемещение запомненной фигуры на новые координаты
     public void MoveFigureTo((int x, int y) coords)
     {
-        //Убираем старые координаты из списка фигур активного игрока
-        CurrentPlayer.FiguresKeys.Remove(selectedFigure.GetCoordinates());
-        //Добавляем новые координаты
-        CurrentPlayer.FiguresKeys.Add(coords);
         //Меняем координаты фигуры
         selectedFigure.SetCoordinates(coords);
         //Перемещаем фигуру по полю
@@ -82,12 +102,7 @@ public class PlayerManager
         selectedFigure = null;
     }
 
-    public PlayerManager(List<IPlayer> players)
-    {
-        playersChain = new ChainedParameters<IPlayer>(players);
-        StartPositions = new Dictionary<(int x, int y), BoardElementController>();
-    }
-
+    //Возвращаем все фигуры на их изначальные позиции
     public void SoftReset()
     {
         selectedFigure = null;
@@ -96,16 +111,9 @@ public class PlayerManager
             v.Value.SetCoordinates(v.Key);
             v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
         }
-        foreach (IPlayer player in playersChain.Params)
-        {
-            player.FiguresKeys.Clear();
-            foreach ((int x, int y) in player.StartCondition)
-            {
-                player.FiguresKeys.Add((x, y));
-            }
-        }
     }
     
+    //Размещаем фигуры на поле
     public void CreatePlayerFiguresAt(Transform parent)
     {
         foreach (IPlayer player in playersChain.Params)
@@ -121,8 +129,7 @@ public class PlayerManager
                 bec.Color = player.Color;
                 bec.Select();
                 bec.Deselect();
-
-                player.FiguresKeys.Add((x, y));
+                
                 player.FiguresValues.Add(bec);
                 StartPositions.Add((x, y), bec);
             }

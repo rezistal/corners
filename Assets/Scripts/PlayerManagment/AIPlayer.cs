@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class AIPlayer : IPlayer
 {
@@ -8,14 +9,19 @@ public class AIPlayer : IPlayer
     public GameObject Prefab { get; }
     public Color Color { get => Color.magenta; }
     public string Name { get => "AI"; }
-    public List<(int x, int y)> FiguresKeys { get; }
     public List<BoardElementController> FiguresValues { get; }
+    public List<(int x, int y)> FiguresKeys
+    {
+        get
+        {
+            return FiguresValues.Select(x => x.GetCoordinates()).ToList();
+        }
+    }
 
     public AIPlayer()
     {
         StartCondition = new BottomRightSC().GetConditions();
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
-        FiguresKeys = new List<(int x, int y)>();
         FiguresValues = new List<BoardElementController>();
     }
 }

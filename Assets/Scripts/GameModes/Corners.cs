@@ -68,12 +68,8 @@ public class Corners : IGameMode
             case "pawn":
                 //Снимаем подсветку с выбранных
                 boardManager.ResetSelected();
-                //Снимаем подсветку с предыдущей активной фигуры
-                playerManager.ResetSelected();
-                //Запоминаем выбранную фигуру
-                playerManager.selectedFigure = figure;
-                //Подсвечиваем выбранную фигуру
-                playerManager.selectedFigure.Select();
+                //Запоминаем и подсвечиваем выбранную фигуру
+                playerManager.Select(figure);
                 //Вычисляем координаты куда согласно правилам может сходить фигура
                 List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys);
                 //Подсвечиваем найденный координаты
