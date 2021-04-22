@@ -7,11 +7,13 @@ public class ClassicChessBoard : IBoard
     //private ChainedParameters<Color> colors;
     public List<(int x, int y)> StartCondition { get; }
     public GameObject Prefab { get; }
+    public int Size { get; }
 
     public ClassicChessBoard()
     {
         Prefab = Resources.Load<GameObject>("Prefabs/Cell");
         StartCondition = new BoardSC().GetConditions();
+        Size = (int)Mathf.Sqrt(StartCondition.Count);
         /*
         List<Color> colorsList = new List<Color>()
         {

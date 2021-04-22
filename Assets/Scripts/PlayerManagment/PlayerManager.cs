@@ -8,8 +8,8 @@ public class PlayerManager
     private Dictionary<(int x, int y), BoardElementController> StartPositions;
     private ChainedParameters<IPlayer> playersChain;
     private InterfaceAI computerPlayer;
-    private BoardElementController selectedFigure;
 
+    public BoardElementController selectedFigure { get; private set; }
     public IPlayer CurrentPlayer { get => playersChain.Current; }
     public IPlayer NextPlayer { get => playersChain.GetNext(); }
     public List<(int x, int y)> AllFiguresKeys

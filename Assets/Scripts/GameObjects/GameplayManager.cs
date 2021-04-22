@@ -40,12 +40,12 @@ public class GameplayManager : MonoBehaviour
     private IEnumerator AITurnStepOne(BoardElementController element)
     {
         gameMode.Manage(element);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.25f);
     }
 
     private IEnumerator AITurnStepTwo((int x, int y) coords)
     {
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.5f);
         gameMode.Manage(boardManager.Figures[coords]);
         StopAllCoroutines();
     }

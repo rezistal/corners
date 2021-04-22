@@ -6,7 +6,7 @@ public class BoardManager
 {
     public Dictionary<(int x, int y), BoardElementController> Figures { get; }
     public List<BoardElementController> ActiveFigures { get; }
-    private IBoard Board;
+    public IBoard Board { get; }
 
     public BoardManager(IBoard board)
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 public class MenuManager : MonoBehaviour
 {
@@ -73,16 +74,8 @@ public class MenuManager : MonoBehaviour
     public void CornersRulesOptions()
     {
         cornersRulesOptions.gameObject.SetActive(false);
-        switch (ruleOptions.value)
-        {
-            case 0:
-            case 1:
-                cornersOptionsPVP.gameObject.SetActive(true);
-                break;
-            case 2:
-                cornersModesOptions.gameObject.SetActive(true);
-                break;
-        }
+        cornersModesOptions.gameObject.SetActive(true);
+
     }
 
     public void BackToMenu()
@@ -92,6 +85,7 @@ public class MenuManager : MonoBehaviour
     }
     #endregion RulesOption
 
+    #region ModesOptions
     public void CornersModesOptions()
     {
         cornersModesOptions.gameObject.SetActive(false);
@@ -109,28 +103,20 @@ public class MenuManager : MonoBehaviour
     public void BackToCornersRulesOptions()
     {
         cornersRulesOptions.gameObject.SetActive(true);
-        cornersOptionsPVP.gameObject.SetActive(false);
         cornersModesOptions.gameObject.SetActive(false);
     }
+    #endregion ModesOptions
 
-    public void BackToCornersModesOptions()
-    {
-        cornersModesOptions.gameObject.SetActive(true);
-        cornersOptionsPVE.gameObject.SetActive(false);
-    }
-
+    #region pve/pvp Options
     public void StartCorners()
     {
-        int mode = modeOptions.value;
         switch (ruleOptions.value)
         {
             case 0:
-                mode = 0;
-                pch.Rule = new RuleDraughts();
+                pch.Rule = new RuleDraughtsReal();
                 break;
             case 1:
-                mode = 0;
-                pch.Rule = new RuleJumps();
+                pch.Rule = new RuleJumpsReal();
                 break;
             case 2:
                 pch.Rule = new RuleSteps();
@@ -138,7 +124,7 @@ public class MenuManager : MonoBehaviour
         }
 
         List<IPlayer> players = new List<IPlayer>();
-        switch (mode)
+        switch (modeOptions.value)
         {
             case 0:
                 players.Add(new RealPlayer(new BottomRightSC(), Color.black, firstNamePVP.text));
@@ -149,16 +135,22 @@ public class MenuManager : MonoBehaviour
                 players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
                 break;
         }
-        pch.ai = new AICorners();
-        pch.PlayerManager = new PlayerManager(players, pch.ai);
-
         IBoard board = new ClassicChessBoard();
         pch.BoardManager = new BoardManager(board);
+
+        pch.ai = new AICorners(board);
+        pch.PlayerManager = new PlayerManager(players, pch.ai);
 
         pch.GameMode = new Corners(pch.Rule, pch.BoardManager, pch.PlayerManager);
 
         SceneManager.LoadScene("GameplayScene");
     }
 
-
+    public void BackToCornersModesOptions()
+    {
+        cornersModesOptions.gameObject.SetActive(true);
+        cornersOptionsPVP.gameObject.SetActive(false);
+        cornersOptionsPVE.gameObject.SetActive(false);
+    }
+    #endregion rve/pvp Options
 }

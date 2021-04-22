@@ -71,12 +71,23 @@ public class Corners : IGameMode
                 //Запоминаем и подсвечиваем выбранную фигуру
                 playerManager.Select(figure);
                 //Вычисляем координаты куда согласно правилам может сходить фигура
-                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys);
+                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
                 //Подсвечиваем найденный координаты
                 boardManager.Select(cells);
                 break;
             //Клетки обычно некликабельны. Если клетка кликабельна - значит выбрана фигура и клетка доступна для перемещения на нее
             case "cell":
+                Debug.Log(playerManager.CurrentPlayer.Name
+                    + " moves ("
+                    + playerManager.selectedFigure.GetCoordinates().x
+                    + ","
+                    + playerManager.selectedFigure.GetCoordinates().y
+                    + ") to ("
+                    + figure.GetCoordinates().x
+                    + ","
+                    + figure.GetCoordinates().y
+                    + ")"
+                    );
                 //Двигаем фигуру
                 playerManager.MoveFigureTo(figure.GetCoordinates());
                 //Снимаем подсветку с ранее выбранных клеток
