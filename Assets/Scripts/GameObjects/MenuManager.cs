@@ -55,7 +55,32 @@ public class MenuManager : MonoBehaviour
 
     public void Draughts()
     {
+        List<IPlayer> players = new List<IPlayer>();
+        players.Add(new DraughtsPlayer(new BlackDraughtsSC(), Color.black, "Черные"));
+        players.Add(new DraughtsPlayer(new WhiteDraughtsSC(), Color.red, "Белые"));
+        /*
+        switch (modeOptions.value)
+        {
+            case 0:
+                players.Add(new RealPlayer(new BottomRightSC(), Color.black, firstNamePVP.text));
+                players.Add(new RealPlayer(new TopLeftSC(), Color.red, secondNamePVP.text));
+                break;
+            case 1:
+                players.Add(new AIPlayer());
+                players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
+                break;
+        }
+        */
+        pch.PlayerManager = new PlayerManager(players);
 
+        IBoard board = new ClassicChessBoard();
+        pch.BoardManager = new BoardManager(board);
+
+        pch.ai = null;
+
+        pch.GameMode = new Draughts(pch.BoardManager, pch.PlayerManager);
+
+        SceneManager.LoadScene("GameplayScene");
     }
 
     public void Corners()

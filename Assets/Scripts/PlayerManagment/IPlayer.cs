@@ -10,4 +10,6 @@ public interface IPlayer
     GameObject Prefab { get; }
     string Name { get; }
     Color Color { get; }
+    BoardElementController GetFigureByCoords((int x, int y) coords);
+    List<BoardElementController> ActiveFiguresValues { get; }
 }

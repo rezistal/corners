@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class RuleDraughts : IRule
+public class RuleJumps : IRule
 {
     public List<(int x, int y)> GetPositions(int current_x, int current_y, List<(int x, int y)> boardState, int boardSize)
     {
         List<((int x, int y) emptySlots, (int x, int y) filledSlots)> init = new List<((int x, int y), (int x, int y))>
         {
-            ((current_x + 2, current_y + 2),(current_x + 1, current_y + 1)),
-            ((current_x - 2, current_y + 2),(current_x - 1, current_y + 1)),
-            ((current_x + 2, current_y - 2),(current_x + 1, current_y - 1)),
-            ((current_x - 2, current_y - 2),(current_x - 1, current_y - 1)),
+            ((current_x + 2, current_y + 0),(current_x + 1, current_y + 0)),
+            ((current_x - 2, current_y + 0),(current_x - 1, current_y + 0)),
+            ((current_x + 0, current_y + 2),(current_x + 0, current_y + 1)),
+            ((current_x + 0, current_y - 2),(current_x + 0, current_y - 1)),
         };
-
+        
         List<((int x, int y) emptySlots, (int x, int y) filledSlots)> requirements =
-            init.Where(i =>
+            init.Where(i => 
                 i.emptySlots.x > 0 &&
                 i.emptySlots.x <= boardSize &&
                 i.emptySlots.y > 0 &&
@@ -37,7 +37,7 @@ public class RuleDraughts : IRule
         }
         if (result.Any())
         {
-            for (int i = result.Count - 1; i >= 0; i--)
+            for(int i = result.Count-1; i >=0; i--)
             {
                 int tx = result.ElementAt(i).x;
                 int ty = result.ElementAt(i).y;
@@ -50,5 +50,10 @@ public class RuleDraughts : IRule
         {
             return new List<(int x, int y)>();
         }
+    }
+    
+    List<((int x, int y) cellToMove, (int x, int y) cellToKill)> IRule.GetKillPositions(int current_x, int current_y, List<(int x, int y)> friendlyFigures, List<(int x, int y)> enemyFigures, int boardSize)
+    {
+        throw new System.NotImplementedException();
     }
 }

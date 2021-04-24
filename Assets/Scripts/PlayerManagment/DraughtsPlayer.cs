@@ -3,34 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class RealPlayer : IPlayer
+public class DraughtsPlayer : IPlayer
 {
     public List<(int x, int y)> StartCondition { get; }
     public GameObject Prefab { get; }
     public string Name { get; }
     public Color Color { get; }
+
     public List<BoardElementController> FiguresValues { get; }
 
     public List<(int x, int y)> FiguresKeys
     {
         get
         {
-            return FiguresValues.Select(x => x.GetCoordinates()).ToList();
+            return FiguresValues.Where(x => x.Alive).Select(x => x.GetCoordinates()).ToList();
         }
     }
 
-    public RealPlayer(IStartCondition startCondition, Color color, string name)
+    public List<BoardElementController> ActiveFiguresValues
+    {
+        get
+        {
+            return FiguresValues.Where(x => x.Alive).ToList();
+        }
+    }
+
+    public DraughtsPlayer(IStartCondition startCondition, Color color, string name)
     {
         StartCondition = startCondition.GetConditions();
         Color = color;
-        FiguresValues = new List<BoardElementController>();
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
         Name = name;
+        FiguresValues = new List<BoardElementController>();
     }
 
     public BoardElementController GetFigureByCoords((int x, int y) coords)
     {
-        throw new System.NotImplementedException();
+        foreach(BoardElementController b in ActiveFiguresValues)
+        {
+            if(b.GetCoordinates() == coords)
+            {
+                return b;
+            }
+        }
+        return null;
     }
-    public List<BoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
 }

@@ -20,11 +20,14 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     public IRule Rule { get => element.Rule; set => element.Rule = value; }
     public Color Color { get => img.color; set => img.color = value; }
     public string ElementName { get => element.Name; }
-    
+
+    public bool Alive { get; set; }
+
     public static event GameplayManager.Figure Clicked;
 
     private void Awake()
     {
+        Alive = true;
         element = gameObject.GetComponent<IBoardElement>();
     }
 

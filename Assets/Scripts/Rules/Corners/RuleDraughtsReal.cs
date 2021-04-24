@@ -11,4 +11,9 @@ public class RuleDraughtsReal : IRule
         steps.AddRange(jumps);
         return steps;
     }
+
+    List<((int x, int y) cellToMove, (int x, int y) cellToKill)> IRule.GetKillPositions(int current_x, int current_y, List<(int x, int y)> friendlyFigures, List<(int x, int y)> enemyFigures, int boardSize)
+    {
+        throw new System.NotImplementedException();
+    }
 }

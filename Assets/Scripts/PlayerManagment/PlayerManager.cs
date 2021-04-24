@@ -6,8 +6,8 @@ using System.Linq;
 public class PlayerManager
 {
     private Dictionary<(int x, int y), BoardElementController> StartPositions;
-    private ChainedParameters<IPlayer> playersChain;
 
+    public ChainedParameters<IPlayer> playersChain { get; private set; }
     public static event GameplayManager.AI ActivateAI;
     public BoardElementController selectedFigure { get; private set; }
     public IPlayer CurrentPlayer { get => playersChain.Current; }
@@ -101,12 +101,29 @@ public class PlayerManager
         selectedFigure = null;
     }
 
+    //Перемещение запомненной фигуры на новые координаты и срубание фигуры на указанной клетке
+    public void MoveToKill((int x, int y) cellToMove, (int x, int y) cellToKill)
+    {
+        //Меняем координаты фигуры
+        selectedFigure.SetCoordinates(cellToMove);
+        //Перемещаем фигуру по полю
+        selectedFigure.SetTransform(new Vector2((cellToMove.x * 2 + 1) * 64, (cellToMove.y * 2 + 1) * 64));
+        //Получаем фигуру которую нужно срубить по переданным координатам
+        BoardElementController b = NextPlayer.GetFigureByCoords(cellToKill);
+        //Рубим фигуру
+        b.Alive = false;
+        //Отключаем ее видимость на поле
+        b.gameObject.SetActive(false);
+    }
+
     //Возвращаем все фигуры на их изначальные позиции
     public void SoftReset()
     {
         selectedFigure = null;
         foreach (var v in StartPositions)
         {
+            v.Value.Alive = true;
+            v.Value.gameObject.SetActive(true);
             v.Value.SetCoordinates(v.Key);
             v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
         }
@@ -128,7 +145,7 @@ public class PlayerManager
                 bec.Color = player.Color;
                 bec.Select();
                 bec.Deselect();
-                
+
                 player.FiguresValues.Add(bec);
                 StartPositions.Add((x, y), bec);
             }

@@ -24,4 +24,10 @@ public class AIPlayer : IPlayer
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
         FiguresValues = new List<BoardElementController>();
     }
+
+    public BoardElementController GetFigureByCoords((int x, int y) coords)
+    {
+        throw new System.NotImplementedException();
+    }
+    public List<BoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
 }
