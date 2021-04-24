@@ -56,8 +56,8 @@ public class MenuManager : MonoBehaviour
     public void Draughts()
     {
         List<IPlayer> players = new List<IPlayer>();
-        players.Add(new DraughtsPlayer(new BlackDraughtsSC(), Color.black, "Черные"));
-        players.Add(new DraughtsPlayer(new WhiteDraughtsSC(), Color.red, "Белые"));
+        players.Add(new PlayerDraughtsHuman(new SCBlackDraughts(), Color.black, "Черные"));
+        players.Add(new PlayerDraughtsHuman(new SCWhiteDraughts(), Color.red, "Белые"));
         /*
         switch (modeOptions.value)
         {
@@ -73,12 +73,12 @@ public class MenuManager : MonoBehaviour
         */
         pch.PlayerManager = new PlayerManager(players);
 
-        IBoard board = new ClassicChessBoard();
+        IBoard board = new BoardClassicChess();
         pch.BoardManager = new BoardManager(board);
 
         pch.ai = null;
 
-        pch.GameMode = new Draughts(pch.BoardManager, pch.PlayerManager);
+        pch.GameMode = new GMDraughts(pch.BoardManager, pch.PlayerManager);
 
         SceneManager.LoadScene("GameplayScene");
     }
@@ -152,22 +152,22 @@ public class MenuManager : MonoBehaviour
         switch (modeOptions.value)
         {
             case 0:
-                players.Add(new RealPlayer(new BottomRightSC(), Color.black, firstNamePVP.text));
-                players.Add(new RealPlayer(new TopLeftSC(), Color.red, secondNamePVP.text));
+                players.Add(new PlayerCornersHuman(new SCBottomRight(), Color.black, firstNamePVP.text));
+                players.Add(new PlayerCornersHuman(new SCTopLeft(), Color.red, secondNamePVP.text));
                 break;
             case 1:
                 players.Add(new AIPlayer());
-                players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
+                players.Add(new PlayerCornersHuman(new SCTopLeft(), Color.red, firstNamePVE.text));
                 break;
         }
         pch.PlayerManager = new PlayerManager(players);
 
-        IBoard board = new ClassicChessBoard();
+        IBoard board = new BoardClassicChess();
         pch.BoardManager = new BoardManager(board);
         
         pch.ai = new AICorners(pch.PlayerManager, pch.BoardManager);
 
-        pch.GameMode = new Corners(pch.Rule, pch.BoardManager, pch.PlayerManager);
+        pch.GameMode = new GMCorners(pch.Rule, pch.BoardManager, pch.PlayerManager);
 
         SceneManager.LoadScene("GameplayScene");
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardSC : IStartCondition
+public class SCBoard8x8 : IStartCondition
 {
     public List<(int x, int y)> GetConditions()
     {

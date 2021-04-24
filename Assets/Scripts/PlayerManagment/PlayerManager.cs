@@ -91,10 +91,20 @@ public class PlayerManager
     //Перемещение запомненной фигуры на новые координаты
     public void MoveFigureTo((int x, int y) coords)
     {
+        MoveSelected(coords);
+        Deselect();
+    }
+
+    public void MoveSelected((int x, int y) coords)
+    {
         //Меняем координаты фигуры
         selectedFigure.SetCoordinates(coords);
         //Перемещаем фигуру по полю
         selectedFigure.SetTransform(new Vector2((coords.x * 2 + 1) * 64, (coords.y * 2 + 1) * 64));
+    }
+
+    public void Deselect()
+    {
         //Снимаем сфигуры выделение
         selectedFigure.Deselect();
         //Обнуляем выбранную фигуру 

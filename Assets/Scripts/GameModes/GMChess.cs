@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chess : IGameMode
+public class GMChess : IGameMode
 {
     public bool Endgame { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 

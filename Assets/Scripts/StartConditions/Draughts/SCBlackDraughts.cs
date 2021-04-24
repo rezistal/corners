@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlackDraughtsSC : IStartCondition
+public class SCBlackDraughts : IStartCondition
 {
     public List<(int x, int y)> GetConditions()
     {

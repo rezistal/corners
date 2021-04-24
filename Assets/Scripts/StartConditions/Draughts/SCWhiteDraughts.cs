@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WhiteDraughtsSC : IStartCondition
+public class SCWhiteDraughts : IStartCondition
 {
     public List<(int x, int y)> GetConditions()
     {

@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Draughts : IGameMode
+public class GMDraughts : IGameMode
 {
     public bool Endgame { get; set; }
 
     private BoardManager boardManager;
     private PlayerManager playerManager;
-    private IRule killRule;
     private TurnFlow state;
     private List<((int x, int y) cellToMove, (int x, int y) cellToKill)> killList;
+    private IRule queenRule;
+    private Sprite queenSprite;
+    private List<(int x, int y)> blackQueenSC;
+    private List<(int x, int y)> whiteQueenSC;
+
 
     private enum TurnFlow
     {
@@ -20,15 +24,26 @@ public class Draughts : IGameMode
         KILLING_SPREE //Передвинуть фигуру можно только срубив другую шашку
     }
 
-    public Draughts(BoardManager boardManager, PlayerManager playerManager)
+    public GMDraughts(BoardManager boardManager, PlayerManager playerManager)
     {
         this.boardManager = boardManager;
         this.playerManager = playerManager;
         Endgame = false;
-        killRule = new RuleDraughts();
+        queenRule = new RuleQueenDraughts();
+        queenSprite = Resources.Load<Sprite>("Images/Queen");
+        blackQueenSC = new SCBlackQueen().GetConditions();
+        whiteQueenSC = new SCWhiteQueen().GetConditions();
         state = TurnFlow.PICK_FIGURE;
     }
 
+    private void CheckQueen(BoardElementController figure)
+    {
+        if (!figure.Rule.Equals(queenRule) && (blackQueenSC.Contains(figure.GetCoordinates()) || whiteQueenSC.Contains(figure.GetCoordinates())))
+        {
+            figure.Rule = queenRule;
+            figure.SetSprite(queenSprite);
+        }
+    }
 
     public void Manage(BoardElementController figure)
     {
@@ -41,7 +56,7 @@ public class Draughts : IGameMode
                 //Запоминаем и подсвечиваем выбранную фигуру
                 playerManager.Select(figure);
                 //Список фигур которые можно срубить
-                killList = killRule.GetKillPositions(
+                killList = figure.Rule.GetKillPositions(
                     figure.x, figure.y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
 
                 if (killList.Any())
@@ -75,8 +90,10 @@ public class Draughts : IGameMode
                         (int x, int y) cellToKill = killList.Where(x => x.cellToMove == (figure.x, figure.y)).ToList().ElementAt(0).cellToKill;
                         //Перемещаем фигуру и рубим фигуру на координате
                         playerManager.MoveToKill(figure.GetCoordinates(), cellToKill);
+                        //Стала ли фигура дамкой
+                        CheckQueen(playerManager.selectedFigure);
                         //Перевычисляем список фигур которые еще раз может срубить текущая фигура
-                        killList = killRule.GetKillPositions(
+                        killList = playerManager.selectedFigure.Rule.GetKillPositions(
                             figure.x, figure.y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
 
                         //Продолжаем рубить - можно только ранее выбранной фигурой
@@ -110,7 +127,11 @@ public class Draughts : IGameMode
                         break;
                     case "cell":
                         //Двигаем фигуру
-                        playerManager.MoveFigureTo(figure.GetCoordinates());
+                        playerManager.MoveSelected(figure.GetCoordinates());
+                        //Стала ли фигура дамкой
+                        CheckQueen(playerManager.selectedFigure);
+                        //Отменяем выделение фигуры
+                        playerManager.Deselect();
                         //Снимаем подсветку с ранее выбранных клеток
                         boardManager.ResetSelected();
                         //Следующий ход
@@ -155,7 +176,7 @@ public class Draughts : IGameMode
         foreach (BoardElementController b in playerManager.NextPlayer.ActiveFiguresValues)
         {
             //Проверяем может ли следующий игрок рубить фигуры
-            List<((int x, int y) cellToMove, (int x, int y) cellToKill)> kills = killRule.GetKillPositions(
+            List<((int x, int y) cellToMove, (int x, int y) cellToKill)> kills = b.Rule.GetKillPositions(
                 b.x, b.y, playerManager.NextPlayer.FiguresKeys, playerManager.CurrentPlayer.FiguresKeys, boardManager.Board.Size);
             //Активируем только те фишки которые могут рубить
             if (kills.Any())

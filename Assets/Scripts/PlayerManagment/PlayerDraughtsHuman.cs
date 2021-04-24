@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class DraughtsPlayer : IPlayer
+public class PlayerDraughtsHuman : IPlayer
 {
     public List<(int x, int y)> StartCondition { get; }
     public GameObject Prefab { get; }
@@ -28,7 +28,7 @@ public class DraughtsPlayer : IPlayer
         }
     }
 
-    public DraughtsPlayer(IStartCondition startCondition, Color color, string name)
+    public PlayerDraughtsHuman(IStartCondition startCondition, Color color, string name)
     {
         StartCondition = startCondition.GetConditions();
         Color = color;

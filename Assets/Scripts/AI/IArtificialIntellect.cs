@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface InterfaceAI
+public interface IArtificialIntellect
 {
     (BoardElementController element, (int x, int y) coords) Calculations();
 }

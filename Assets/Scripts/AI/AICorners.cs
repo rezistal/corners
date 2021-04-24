@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AICorners : InterfaceAI
+public class AICorners : IArtificialIntellect
 {
     private Dictionary<(int x, int y), int> DecisionMatrix;
     private PlayerManager playerManager;

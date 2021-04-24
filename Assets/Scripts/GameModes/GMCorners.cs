@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Corners : IGameMode
+public class GMCorners : IGameMode
 {
     private IRule rule;
     private BoardManager boardManager;
@@ -11,7 +11,7 @@ public class Corners : IGameMode
 
     public bool Endgame { get; set; }
 
-    public Corners(IRule r, BoardManager b, PlayerManager p)
+    public GMCorners(IRule r, BoardManager b, PlayerManager p)
     {
         rule = r;
         playerManager = p;

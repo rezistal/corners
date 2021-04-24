@@ -5,6 +5,8 @@ using System.Linq;
 
 public class RuleBlackDraughts : IRule
 {
+    private IRule draughtsRule = new RuleDraughts();
+
     public List<(int x, int y)> GetPositions(int current_x, int current_y, List<(int x, int y)> boardState, int boardSize)
     {
         List<(int x, int y)> init = new List<(int x, int y)>
@@ -36,6 +38,6 @@ public class RuleBlackDraughts : IRule
 
     List<((int x, int y) cellToMove, (int x, int y) cellToKill)> IRule.GetKillPositions(int current_x, int current_y, List<(int x, int y)> friendlyFigures, List<(int x, int y)> enemyFigures, int boardSize)
     {
-        throw new System.NotImplementedException();
+        return draughtsRule.GetKillPositions(current_x, current_y, friendlyFigures, enemyFigures, boardSize);
     }
 }

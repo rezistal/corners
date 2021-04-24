@@ -21,7 +21,7 @@ public class GameplayManager : MonoBehaviour
     private IGameMode gameMode;
     private PlayerManager playerManager;
     private BoardManager boardManager;
-    private InterfaceAI ai;
+    private IArtificialIntellect ai;
 
     public delegate void AI();
     public delegate void Figure(BoardElementController element);
