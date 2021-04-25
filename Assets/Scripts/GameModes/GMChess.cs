@@ -6,7 +6,7 @@ public class GMChess : IGameMode
 {
     public bool Endgame { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-    public void Manage(BoardElementController element)
+    public void Manage(IBoardElementController element)
     {
         throw new System.NotImplementedException();
     }
@@ -21,7 +21,7 @@ public class GMChess : IGameMode
         throw new System.NotImplementedException();
     }
 
-    public IEnumerator ManageAI(BoardElementController element, (int x, int y) coords)
+    public IEnumerator ManageAI(IBoardElementController element, (int x, int y) coords)
     {
         throw new System.NotImplementedException();
     }

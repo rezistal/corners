@@ -10,7 +10,7 @@ public class PlayerDraughtsHuman : IPlayer
     public string Name { get; }
     public Color Color { get; }
 
-    public List<BoardElementController> FiguresValues { get; }
+    public List<IBoardElementController> FiguresValues { get; }
 
     public List<(int x, int y)> FiguresKeys
     {
@@ -20,7 +20,7 @@ public class PlayerDraughtsHuman : IPlayer
         }
     }
 
-    public List<BoardElementController> ActiveFiguresValues
+    public List<IBoardElementController> ActiveFiguresValues
     {
         get
         {
@@ -34,12 +34,12 @@ public class PlayerDraughtsHuman : IPlayer
         Color = color;
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
         Name = name;
-        FiguresValues = new List<BoardElementController>();
+        FiguresValues = new List<IBoardElementController>();
     }
 
-    public BoardElementController GetFigureByCoords((int x, int y) coords)
+    public IBoardElementController GetFigureByCoords((int x, int y) coords)
     {
-        foreach(BoardElementController b in ActiveFiguresValues)
+        foreach(IBoardElementController b in ActiveFiguresValues)
         {
             if(b.GetCoordinates() == coords)
             {

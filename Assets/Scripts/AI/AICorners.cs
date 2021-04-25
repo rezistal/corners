@@ -28,18 +28,18 @@ public class AICorners : IArtificialIntellect
         DecisionMatrix = keys.Select((k, i) => new { k, v = values[i] }).ToDictionary(x => x.k, x => x.v);
     }
 
-    public (BoardElementController element, (int x, int y) coords) Calculations()
+    public (IBoardElementController element, (int x, int y) coords) Calculations()
     {
-        Dictionary<BoardElementController, (int val, (int x, int y) coords)> figuresMax =
-            new Dictionary<BoardElementController, (int, (int x, int y))>();
+        Dictionary<IBoardElementController, (int val, (int x, int y) coords)> figuresMax =
+            new Dictionary<IBoardElementController, (int, (int x, int y))>();
 
         int currentSum = 0;
-        foreach (BoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
+        foreach (IBoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
         {
             //Текущая сумма по всем клеткам
             currentSum += DecisionMatrix[figure.GetCoordinates()];
             //Доступные фигуре для перемещения клетки
-            List<(int x, int y)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
+            List<(int x, int y)> cells = figure.Rule.GetPositions(figure.X, figure.Y, playerManager.AllFiguresKeys, boardManager.Board.Size);
 
             figuresMax.Add(figure, (0, (0, 0)));
             foreach ((int x, int y) cell in cells)
@@ -51,11 +51,11 @@ public class AICorners : IArtificialIntellect
                 }
             }
         }
-        BoardElementController selectedFigure = figuresMax.First().Key;
+        IBoardElementController selectedFigure = figuresMax.First().Key;
         (int x, int y) selectedCell = figuresMax.First().Value.coords;
 
         int max = 0;
-        foreach (BoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
+        foreach (IBoardElementController figure in playerManager.CurrentPlayer.FiguresValues)
         {
             //Перевычисляем сумму для всех фигур с учетом того куда они бы сходили
             int calculated_sum = currentSum - DecisionMatrix[figure.GetCoordinates()] + figuresMax[figure].val;

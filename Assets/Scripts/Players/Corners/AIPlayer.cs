@@ -9,7 +9,7 @@ public class AIPlayer : IPlayer
     public GameObject Prefab { get; }
     public Color Color { get => Color.blue; }
     public string Name { get => "AI"; }
-    public List<BoardElementController> FiguresValues { get; }
+    public List<IBoardElementController> FiguresValues { get; }
     public List<(int x, int y)> FiguresKeys
     {
         get
@@ -22,12 +22,12 @@ public class AIPlayer : IPlayer
     {
         StartCondition = new SCBottomRight().GetConditions();
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
-        FiguresValues = new List<BoardElementController>();
+        FiguresValues = new List<IBoardElementController>();
     }
 
-    public BoardElementController GetFigureByCoords((int x, int y) coords)
+    public IBoardElementController GetFigureByCoords((int x, int y) coords)
     {
         throw new System.NotImplementedException();
     }
-    public List<BoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
+    public List<IBoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
 }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface IBoardManager
 {
-    Dictionary<(int x, int y), BoardElementController> Figures { get; }
-    List<BoardElementController> ActiveFigures { get; }
+    Dictionary<(int x, int y), IBoardElementController> Figures { get; }
+    List<IBoardElementController> ActiveFigures { get; }
     IBoard Board { get; }
     void ResetBoard();
     void ResetSelected();

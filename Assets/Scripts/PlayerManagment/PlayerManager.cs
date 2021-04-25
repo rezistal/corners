@@ -5,12 +5,12 @@ using System.Linq;
 
 public class PlayerManager : IPlayerManager
 {
-    public Dictionary<(int x, int y), BoardElementController> StartPositions { get; }
-    public List<BoardElementController> AllFiguresValues
+    public Dictionary<(int x, int y), IBoardElementController> StartPositions { get; }
+    public List<IBoardElementController> AllFiguresValues
     {
         get
         {
-            List<BoardElementController> bl = new List<BoardElementController>();
+            List<IBoardElementController> bl = new List<IBoardElementController>();
             foreach (IPlayer p in PlayersChain.Params)
             {
                 bl.AddRange(p.FiguresValues);
@@ -32,7 +32,7 @@ public class PlayerManager : IPlayerManager
     }
 
     public ChainedParameters<IPlayer> PlayersChain { get; private set; }
-    public BoardElementController SelectedFigure { get; private set; }
+    public IBoardElementController SelectedFigure { get; private set; }
     public IPlayer CurrentPlayer { get => PlayersChain.Current; }
     public IPlayer NextPlayer { get => PlayersChain.GetNext(); }
 
@@ -41,7 +41,7 @@ public class PlayerManager : IPlayerManager
     public PlayerManager(List<IPlayer> players)
     {
         PlayersChain = new ChainedParameters<IPlayer>(players);
-        StartPositions = new Dictionary<(int x, int y), BoardElementController>();
+        StartPositions = new Dictionary<(int x, int y), IBoardElementController>();
     }
 
     //Выбор следующего игрока
@@ -53,7 +53,7 @@ public class PlayerManager : IPlayerManager
     //Блокировка всех фигур и снятие с них выделения
     public void DeactivateAll()
     {
-        foreach (BoardElementController b in AllFiguresValues)
+        foreach (IBoardElementController b in AllFiguresValues)
         {
             b.Deactivate();
             b.Deselect();
@@ -69,7 +69,7 @@ public class PlayerManager : IPlayerManager
         }
         else
         {
-            foreach (BoardElementController b in PlayersChain.Current.FiguresValues)
+            foreach (IBoardElementController b in PlayersChain.Current.FiguresValues)
             {
                 b.Activate();
             }
@@ -77,7 +77,7 @@ public class PlayerManager : IPlayerManager
     }
 
     //Запоминаем и подсвечиваем выбранную фигуру
-    public void Select(BoardElementController figure)
+    public void Select(IBoardElementController figure)
     {
         //Снимаем старое выделение
         if (SelectedFigure != null)
@@ -120,11 +120,11 @@ public class PlayerManager : IPlayerManager
         //Перемещаем фигуру по полю
         SelectedFigure.SetTransform(new Vector2((cellToMove.x * 2 + 1) * 64, (cellToMove.y * 2 + 1) * 64));
         //Получаем фигуру которую нужно срубить по переданным координатам
-        BoardElementController b = NextPlayer.GetFigureByCoords(cellToKill);
+        IBoardElementController b = NextPlayer.GetFigureByCoords(cellToKill);
         //Рубим фигуру
         b.Alive = false;
         //Отключаем ее видимость на поле
-        b.gameObject.SetActive(false);
+        b.GameObject.SetActive(false);
     }
 
     //Возвращаем все фигуры на их изначальные позиции
@@ -134,7 +134,7 @@ public class PlayerManager : IPlayerManager
         foreach (var v in StartPositions)
         {
             v.Value.Alive = true;
-            v.Value.gameObject.SetActive(true);
+            v.Value.GameObject.SetActive(true);
             v.Value.SetCoordinates(v.Key);
             v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
         }
@@ -149,7 +149,7 @@ public class PlayerManager : IPlayerManager
             {
                 GameObject o = Object.Instantiate(player.Prefab);
                 o.transform.SetParent(parent, false);
-                BoardElementController bec = o.GetComponent<BoardElementController>();
+                IBoardElementController bec = o.GetComponent<IBoardElementController>();
                 bec.SetCoordinates((x, y));
                 bec.SetTransform(new Vector2((x * 2 + 1) * 64, (y * 2 + 1) * 64));
                 

@@ -22,7 +22,7 @@ public class GMCorners : IGameMode
     public void StartGame()
     {
         //В этой игре все фигуры двигаются по одному выбранному игроками правилу. Применяем его к каждой фигуре
-        foreach (BoardElementController bec in playerManager.AllFiguresValues)
+        foreach (IBoardElementController bec in playerManager.AllFiguresValues)
         {
             bec.Rule = rule;
         }
@@ -62,7 +62,7 @@ public class GMCorners : IGameMode
     }
 
     //Ход игры для игроков
-    public void Manage(BoardElementController figure)
+    public void Manage(IBoardElementController figure)
     {
         switch (figure.ElementName)
         {
@@ -72,7 +72,7 @@ public class GMCorners : IGameMode
                 //Запоминаем и подсвечиваем выбранную фигуру
                 playerManager.Select(figure);
                 //Вычисляем координаты куда согласно правилам может сходить фигура
-                List<(int,int)> cells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
+                List<(int,int)> cells = figure.Rule.GetPositions(figure.X, figure.Y, playerManager.AllFiguresKeys, boardManager.Board.Size);
                 //Подсвечиваем найденные координаты
                 boardManager.Select(cells);
                 break;
@@ -89,7 +89,7 @@ public class GMCorners : IGameMode
     }
 
     //Ход игры для AI
-    public IEnumerator ManageAI(BoardElementController figure, (int x, int y) cell)
+    public IEnumerator ManageAI(IBoardElementController figure, (int x, int y) cell)
     {
         yield return new WaitForSeconds(0.8f);
         //Запоминаем и подсвечиваем выбранную фигуру

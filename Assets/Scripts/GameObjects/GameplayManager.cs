@@ -24,16 +24,16 @@ public class GameplayManager : MonoBehaviour
     private IArtificialIntellect ai;
 
     public delegate void AI();
-    public delegate void Figure(BoardElementController element);
+    public delegate void Figure(IBoardElementController element);
 
-    private void Manage(BoardElementController element)
+    private void Manage(IBoardElementController element)
     {
         gameMode.Manage(element);
     }
 
     private void ManageAI()
     {
-        (BoardElementController element, (int x, int y) coords) = ai.Calculations();
+        (IBoardElementController element, (int x, int y) coords) = ai.Calculations();
         StartCoroutine(gameMode.ManageAI(element, coords));
     }
 
@@ -46,13 +46,19 @@ public class GameplayManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        BoardElementController.Clicked += Manage;
+        foreach(IBoardElementController b in playerManager.AllFiguresValues)
+        {
+            b.Clicked += Manage;
+        }
         playerManager.ActivateAI += ManageAI;
     }
 
     private void OnDisable()
     {
-        BoardElementController.Clicked -= Manage;
+        foreach (IBoardElementController b in playerManager.AllFiguresValues)
+        {
+            b.Clicked -= Manage;
+        }
         playerManager.ActivateAI -= ManageAI;
     }
 

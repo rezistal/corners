@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IArtificialIntellect
 {
-    (BoardElementController element, (int x, int y) coords) Calculations();
+    (IBoardElementController element, (int x, int y) coords) Calculations();
 }

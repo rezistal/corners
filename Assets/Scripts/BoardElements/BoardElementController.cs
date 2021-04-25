@@ -1,10 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class BoardElementController : MonoBehaviour, IPointerClickHandler
+public interface IBoardElementController : IPointerClickHandler
+{
+    int X { get; }
+    int Y { get; }
+    GameObject GameObject { get; }
+    IRule Rule { get; set; }
+    Color Color { get; set; }
+    string ElementName { get; }
+    bool Alive { get; set; }
+
+    void SetSprite(Sprite s);
+    void SetCoordinates((int x, int y) c);
+    (int x, int y) GetCoordinates();
+    void SetTransform(Vector2 v);
+    void Activate();
+    void Deactivate();
+    void Select();
+    void Deselect();
+
+    event GameplayManager.Figure Clicked;
+}
+
+[Serializable]
+public class BoardElementController : MonoBehaviour, IBoardElementController
 {
     [SerializeField]
     private Image img;
@@ -14,16 +38,18 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
     private CanvasGroup canvasGroup;
     private IBoardElement element;
 
-    public int x { get; private set; }
-    public int y { get; private set; }
+    public int X { get; private set; }
+    public int Y { get; private set; }
+    public GameObject GameObject { get => gameObject; }
 
     public IRule Rule { get => element.Rule; set => element.Rule = value; }
     public Color Color { get => img.color; set => img.color = value; }
+
     public string ElementName { get => element.Name; }
 
     public bool Alive { get; set; }
 
-    public static event GameplayManager.Figure Clicked;
+    public event GameplayManager.Figure Clicked;
 
     private void Awake()
     {
@@ -38,13 +64,13 @@ public class BoardElementController : MonoBehaviour, IPointerClickHandler
 
     public void SetCoordinates((int x, int y) c)
     {
-        x = c.x;
-        y = c.y;
+        X = c.x;
+        Y = c.y;
     }
 
     public (int x, int y) GetCoordinates()
     {
-        return (x, y);
+        return (X, Y);
     }
 
     public void SetTransform(Vector2 v)

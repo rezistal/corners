@@ -6,9 +6,14 @@ using UnityEngine.UI;
 public class BoardElementCell : MonoBehaviour, IBoardElement
 {
     [SerializeField]
-    private BoardElementController controller;
+    private IBoardElementController controller;
     [SerializeField]
     private GameObject highlight;
+
+    private void Awake()
+    {
+        controller = GetComponent<IBoardElementController>();
+    }
 
     private void Start()
     {

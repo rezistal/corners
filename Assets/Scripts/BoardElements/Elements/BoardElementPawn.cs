@@ -5,11 +5,16 @@ using UnityEngine;
 public class BoardElementPawn : MonoBehaviour, IBoardElement
 {
     [SerializeField]
-    private BoardElementController controller;
+    private IBoardElementController controller;
 
     private Color oldColor;
     public string Name { get => "pawn"; }
     public IRule Rule { get; set; }
+
+    private void Awake()
+    {
+        controller = GetComponent<IBoardElementController>();
+    }
 
     public void Select()
     {

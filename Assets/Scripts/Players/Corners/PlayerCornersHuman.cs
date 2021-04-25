@@ -9,7 +9,7 @@ public class PlayerCornersHuman : IPlayer
     public GameObject Prefab { get; }
     public string Name { get; }
     public Color Color { get; }
-    public List<BoardElementController> FiguresValues { get; }
+    public List<IBoardElementController> FiguresValues { get; }
 
     public List<(int x, int y)> FiguresKeys
     {
@@ -23,14 +23,14 @@ public class PlayerCornersHuman : IPlayer
     {
         StartCondition = startCondition.GetConditions();
         Color = color;
-        FiguresValues = new List<BoardElementController>();
+        FiguresValues = new List<IBoardElementController>();
         Prefab = Resources.Load<GameObject>("Prefabs/Figure");
         Name = name;
     }
 
-    public BoardElementController GetFigureByCoords((int x, int y) coords)
+    public IBoardElementController GetFigureByCoords((int x, int y) coords)
     {
         throw new System.NotImplementedException();
     }
-    public List<BoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
+    public List<IBoardElementController> ActiveFiguresValues => throw new System.NotImplementedException();
 }

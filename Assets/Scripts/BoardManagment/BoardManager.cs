@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class BoardManager : IBoardManager
 {
-    public Dictionary<(int x, int y), BoardElementController> Figures { get; }
-    public List<BoardElementController> ActiveFigures { get; }
+    public Dictionary<(int x, int y), IBoardElementController> Figures { get; }
+    public List<IBoardElementController> ActiveFigures { get; }
     public IBoard Board { get; }
 
     public BoardManager(IBoard board)
     {
-        Figures = new Dictionary<(int x, int y), BoardElementController>();
-        ActiveFigures = new List<BoardElementController>();
+        Figures = new Dictionary<(int x, int y), IBoardElementController>();
+        ActiveFigures = new List<IBoardElementController>();
         Board = board;
     }
 
     //Все клетки не выделены и не кликабельны
     public void ResetBoard()
     {
-        foreach (BoardElementController b in Figures.Values)
+        foreach (IBoardElementController b in Figures.Values)
         {
             b.Deactivate();
             b.Deselect();
@@ -28,7 +28,7 @@ public class BoardManager : IBoardManager
     //Снимаем выделение и кликабельность с ранее выбранных клеток
     public void ResetSelected()
     {
-        foreach (BoardElementController b in ActiveFigures)
+        foreach (IBoardElementController b in ActiveFigures)
         {
             b.Deactivate();
             b.Deselect();
@@ -57,7 +57,7 @@ public class BoardManager : IBoardManager
         {
             GameObject o = Object.Instantiate(Board.Prefab);
             o.transform.SetParent(parent, false);
-            BoardElementController bec = o.GetComponent<BoardElementController>();
+            IBoardElementController bec = o.GetComponent<IBoardElementController>();
             bec.SetCoordinates((x, y));
             bec.SetTransform(new Vector2((x * 2 + 1) * 64, (y * 2 + 1) * 64));
             bec.Color = Board.GetCellColor(x,y);

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BESpartanCell : MonoBehaviour, IBoardElement
 {
-    public string Name => throw new System.NotImplementedException();
+    public string Name => "cell";
 
-    public IRule Rule { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public IRule Rule { get ; set; }
 
     public void Deselect()
     {

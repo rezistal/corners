@@ -4,12 +4,12 @@ using UnityEngine;
 
 public interface IPlayerManager
 {
-    Dictionary<(int x, int y), BoardElementController> StartPositions { get; }
-    List<BoardElementController> AllFiguresValues { get; }
+    Dictionary<(int x, int y), IBoardElementController> StartPositions { get; }
+    List<IBoardElementController> AllFiguresValues { get; }
     List<(int x, int y)> AllFiguresKeys { get; }
 
     ChainedParameters<IPlayer> PlayersChain { get; }
-    BoardElementController SelectedFigure { get; }
+    IBoardElementController SelectedFigure { get; }
     IPlayer CurrentPlayer { get; }
     IPlayer NextPlayer { get; }
 
@@ -18,7 +18,7 @@ public interface IPlayerManager
     void ChangePlayer();
     void DeactivateAll();
     void ActivateCurrentPlayer();
-    void Select(BoardElementController figure);
+    void Select(IBoardElementController figure);
     void MoveFigureTo((int x, int y) coords);
     void MoveSelected((int x, int y) coords);
     void Deselect();

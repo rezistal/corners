@@ -36,7 +36,7 @@ public class GMDraughts : IGameMode
         state = TurnFlow.PICK_FIGURE;
     }
 
-    private void CheckQueen(BoardElementController figure)
+    private void CheckQueen(IBoardElementController figure)
     {
         if (!figure.Rule.Equals(queenRule) && (blackQueenSC.Contains(figure.GetCoordinates()) || whiteQueenSC.Contains(figure.GetCoordinates())))
         {
@@ -45,7 +45,7 @@ public class GMDraughts : IGameMode
         }
     }
 
-    public void Manage(BoardElementController figure)
+    public void Manage(IBoardElementController figure)
     {
         List<(int x, int y)> selectCells;
         switch (state)
@@ -57,7 +57,7 @@ public class GMDraughts : IGameMode
                 playerManager.Select(figure);
                 //Список фигур которые можно срубить
                 killList = figure.Rule.GetKillPositions(
-                    figure.x, figure.y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
+                    figure.X, figure.Y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
 
                 if (killList.Any())
                 {
@@ -69,7 +69,7 @@ public class GMDraughts : IGameMode
                 else
                 {
                     //Вычисляем координаты куда согласно правилам может сходить фигура
-                    List<(int, int)> emptyCells = figure.Rule.GetPositions(figure.x, figure.y, playerManager.AllFiguresKeys, boardManager.Board.Size);
+                    List<(int, int)> emptyCells = figure.Rule.GetPositions(figure.X, figure.Y, playerManager.AllFiguresKeys, boardManager.Board.Size);
                     boardManager.Select(emptyCells);
                     state = TurnFlow.MOVE_FIGURE;
                 }
@@ -87,14 +87,14 @@ public class GMDraughts : IGameMode
                         //Снимаем подсветку с ранее выбранных клеток
                         boardManager.ResetSelected();
                         //Из списка фигур которые можно срубить берем координаты фигуры которую шашка рубит переходя на текущую клетку
-                        (int x, int y) cellToKill = killList.Where(x => x.cellToMove == (figure.x, figure.y)).ToList().ElementAt(0).cellToKill;
+                        (int x, int y) cellToKill = killList.Where(h => (h.cellToMove.x == figure.X && h.cellToMove.y == figure.Y)).ToList().ElementAt(0).cellToKill;
                         //Перемещаем фигуру и рубим фигуру на координате
                         playerManager.MoveToKill(figure.GetCoordinates(), cellToKill);
                         //Стала ли фигура дамкой
                         CheckQueen(playerManager.SelectedFigure);
                         //Перевычисляем список фигур которые еще раз может срубить текущая фигура
                         killList = playerManager.SelectedFigure.Rule.GetKillPositions(
-                            figure.x, figure.y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
+                            figure.X, figure.Y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
 
                         //Продолжаем рубить - можно только ранее выбранной фигурой
                         if (killList.Any())
@@ -173,11 +173,11 @@ public class GMDraughts : IGameMode
     {
         killList.Clear();
         List<(int x, int y)> availableCells = new List<(int x, int y)>();
-        foreach (BoardElementController b in playerManager.NextPlayer.ActiveFiguresValues)
+        foreach (IBoardElementController b in playerManager.NextPlayer.ActiveFiguresValues)
         {
             //Проверяем может ли следующий игрок рубить фигуры
             List<((int x, int y) cellToMove, (int x, int y) cellToKill)> kills = b.Rule.GetKillPositions(
-                b.x, b.y, playerManager.NextPlayer.FiguresKeys, playerManager.CurrentPlayer.FiguresKeys, boardManager.Board.Size);
+                b.X, b.Y, playerManager.NextPlayer.FiguresKeys, playerManager.CurrentPlayer.FiguresKeys, boardManager.Board.Size);
             //Активируем только те фишки которые могут рубить
             if (kills.Any())
             {
@@ -186,7 +186,7 @@ public class GMDraughts : IGameMode
             }
 
             //Проверяем может ли следующий игрок ходить
-            availableCells.AddRange(b.Rule.GetPositions(b.x, b.y, playerManager.AllFiguresKeys, boardManager.Board.Size));
+            availableCells.AddRange(b.Rule.GetPositions(b.X, b.Y, playerManager.AllFiguresKeys, boardManager.Board.Size));
         }
         //Нет ходов
         if(!killList.Any() && !availableCells.Any())
@@ -196,7 +196,7 @@ public class GMDraughts : IGameMode
         return false;
     } 
 
-    public IEnumerator ManageAI(BoardElementController element, (int x, int y) coords)
+    public IEnumerator ManageAI(IBoardElementController element, (int x, int y) coords)
     {
         yield return new WaitForSeconds(2f);
     }
