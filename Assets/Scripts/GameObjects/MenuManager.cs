@@ -11,10 +11,12 @@ public class MenuManager : MonoBehaviour
     private PlayerChoises pch;
     [SerializeField]
     private Canvas chooseGame;
+    [SerializeField]
+    private Canvas backgroundMenu;
 
     void Start()
     {
-        chooseGame.gameObject.SetActive(true);
+        MainMenuSetActive(true);
         cornersRulesOptions.gameObject.SetActive(false);
         cornersModesOptions.gameObject.SetActive(false);
         cornersOptionsPVP.gameObject.SetActive(false);
@@ -22,6 +24,12 @@ public class MenuManager : MonoBehaviour
     }
 
     #region Mainmenu
+    private void MainMenuSetActive(bool flag)
+    {
+        chooseGame.gameObject.SetActive(flag);
+        backgroundMenu.gameObject.SetActive(flag);
+    }
+
     public void Chess()
     {
 
@@ -47,7 +55,7 @@ public class MenuManager : MonoBehaviour
 
     public void Corners()
     {
-        chooseGame.gameObject.SetActive(false);
+        MainMenuSetActive(false);
         cornersRulesOptions.gameObject.SetActive(true);
     }
 
@@ -89,7 +97,7 @@ public class MenuManager : MonoBehaviour
 
     public void BackToMenu()
     {
-        chooseGame.gameObject.SetActive(true);
+        MainMenuSetActive(true);
         cornersRulesOptions.gameObject.SetActive(false);
     }
     #endregion RulesOption

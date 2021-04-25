@@ -52,8 +52,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b33a6ddbefe314e948f40339d2f5e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 0
-  y: 0
   img: {fileID: 6844400512326515759}
   rectTransform: {fileID: 6844400512326515758}
   canvasGroup: {fileID: 6883293538181634531}
@@ -70,7 +68,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3338076108911791731}
-  oldColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!222 &6844400512326515760
 CanvasRenderer:
   m_ObjectHideFlags: 0
