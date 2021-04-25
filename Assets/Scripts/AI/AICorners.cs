@@ -6,10 +6,10 @@ using System.Linq;
 public class AICorners : IArtificialIntellect
 {
     private Dictionary<(int x, int y), int> DecisionMatrix;
-    private PlayerManager playerManager;
-    private BoardManager boardManager;
+    private IPlayerManager playerManager;
+    private IBoardManager boardManager;
 
-    public AICorners(PlayerManager playerManager, BoardManager boardManager)
+    public AICorners(IPlayerManager playerManager, IBoardManager boardManager)
     {
         this.playerManager = playerManager;
         this.boardManager = boardManager;

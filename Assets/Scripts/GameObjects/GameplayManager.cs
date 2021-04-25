@@ -19,8 +19,8 @@ public class GameplayManager : MonoBehaviour
     private GameObject forfeitButton;
 
     private IGameMode gameMode;
-    private PlayerManager playerManager;
-    private BoardManager boardManager;
+    private IPlayerManager playerManager;
+    private IBoardManager boardManager;
     private IArtificialIntellect ai;
 
     public delegate void AI();
@@ -47,13 +47,13 @@ public class GameplayManager : MonoBehaviour
     private void OnEnable()
     {
         BoardElementController.Clicked += Manage;
-        PlayerManager.ActivateAI += ManageAI;
+        playerManager.ActivateAI += ManageAI;
     }
 
     private void OnDisable()
     {
         BoardElementController.Clicked -= Manage;
-        PlayerManager.ActivateAI -= ManageAI;
+        playerManager.ActivateAI -= ManageAI;
     }
 
     void Start()

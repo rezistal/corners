@@ -11,27 +11,6 @@ public class MenuManager : MonoBehaviour
     private PlayerChoises pch;
     [SerializeField]
     private Canvas chooseGame;
-    [SerializeField]
-    private Canvas cornersRulesOptions;
-    [SerializeField]
-    private Canvas cornersModesOptions;
-
-    [SerializeField]
-    private Canvas cornersOptionsPVP;
-    [SerializeField]
-    private Canvas cornersOptionsPVE;
-
-    [SerializeField]
-    private Dropdown ruleOptions;
-    [SerializeField]
-    private Dropdown modeOptions;
-
-    [SerializeField]
-    private InputField firstNamePVP;
-    [SerializeField]
-    private InputField secondNamePVP;
-    [SerializeField]
-    private InputField firstNamePVE;
 
     void Start()
     {
@@ -40,11 +19,6 @@ public class MenuManager : MonoBehaviour
         cornersModesOptions.gameObject.SetActive(false);
         cornersOptionsPVP.gameObject.SetActive(false);
         cornersOptionsPVE.gameObject.SetActive(false);
-    }
-
-    private void Update()
-    {
-
     }
 
     #region Mainmenu
@@ -58,19 +32,7 @@ public class MenuManager : MonoBehaviour
         List<IPlayer> players = new List<IPlayer>();
         players.Add(new PlayerDraughtsHuman(new SCBlackDraughts(), Color.black, "Черные"));
         players.Add(new PlayerDraughtsHuman(new SCWhiteDraughts(), Color.red, "Белые"));
-        /*
-        switch (modeOptions.value)
-        {
-            case 0:
-                players.Add(new RealPlayer(new BottomRightSC(), Color.black, firstNamePVP.text));
-                players.Add(new RealPlayer(new TopLeftSC(), Color.red, secondNamePVP.text));
-                break;
-            case 1:
-                players.Add(new AIPlayer());
-                players.Add(new RealPlayer(new TopLeftSC(), Color.red, firstNamePVE.text));
-                break;
-        }
-        */
+
         pch.PlayerManager = new PlayerManager(players);
 
         IBoard board = new BoardClassicChess();
@@ -94,6 +56,28 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
     }
     #endregion Mainmenu
+
+    #region Corners
+    [SerializeField]
+    private Canvas cornersRulesOptions;
+    [SerializeField]
+    private Canvas cornersModesOptions;
+    [SerializeField]
+    private Canvas cornersOptionsPVP;
+    [SerializeField]
+    private Canvas cornersOptionsPVE;
+
+    [SerializeField]
+    private Dropdown ruleOptions; //Правила игры
+    [SerializeField]
+    private Dropdown modeOptions; //Режим игры PvP или PvE
+
+    [SerializeField]
+    private InputField firstNamePVP;  //Имя первого игрока
+    [SerializeField]
+    private InputField secondNamePVP; //Имя второго игрока
+    [SerializeField]
+    private InputField firstNamePVE;  //Имя игрока играющего против AI
 
     #region RulesOption
     public void CornersRulesOptions()
@@ -164,7 +148,7 @@ public class MenuManager : MonoBehaviour
 
         IBoard board = new BoardClassicChess();
         pch.BoardManager = new BoardManager(board);
-        
+
         pch.ai = new AICorners(pch.PlayerManager, pch.BoardManager);
 
         pch.GameMode = new GMCorners(pch.Rule, pch.BoardManager, pch.PlayerManager);
@@ -179,4 +163,6 @@ public class MenuManager : MonoBehaviour
         cornersOptionsPVE.gameObject.SetActive(false);
     }
     #endregion rve/pvp Options
+
+    #endregion Corners
 }

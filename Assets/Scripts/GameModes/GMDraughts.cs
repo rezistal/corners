@@ -7,8 +7,8 @@ public class GMDraughts : IGameMode
 {
     public bool Endgame { get; set; }
 
-    private BoardManager boardManager;
-    private PlayerManager playerManager;
+    private IBoardManager boardManager;
+    private IPlayerManager playerManager;
     private TurnFlow state;
     private List<((int x, int y) cellToMove, (int x, int y) cellToKill)> killList;
     private IRule queenRule;
@@ -24,7 +24,7 @@ public class GMDraughts : IGameMode
         KILLING_SPREE //Передвинуть фигуру можно только срубив другую шашку
     }
 
-    public GMDraughts(BoardManager boardManager, PlayerManager playerManager)
+    public GMDraughts(IBoardManager boardManager, IPlayerManager playerManager)
     {
         this.boardManager = boardManager;
         this.playerManager = playerManager;
@@ -91,9 +91,9 @@ public class GMDraughts : IGameMode
                         //Перемещаем фигуру и рубим фигуру на координате
                         playerManager.MoveToKill(figure.GetCoordinates(), cellToKill);
                         //Стала ли фигура дамкой
-                        CheckQueen(playerManager.selectedFigure);
+                        CheckQueen(playerManager.SelectedFigure);
                         //Перевычисляем список фигур которые еще раз может срубить текущая фигура
-                        killList = playerManager.selectedFigure.Rule.GetKillPositions(
+                        killList = playerManager.SelectedFigure.Rule.GetKillPositions(
                             figure.x, figure.y, playerManager.CurrentPlayer.FiguresKeys, playerManager.NextPlayer.FiguresKeys, boardManager.Board.Size);
 
                         //Продолжаем рубить - можно только ранее выбранной фигурой
@@ -102,7 +102,7 @@ public class GMDraughts : IGameMode
                             //Делаем все остальные фигуры некликабельными
                             playerManager.DeactivateAll();
                             //Продолжаем рубить выбранной
-                            playerManager.Select(playerManager.selectedFigure);
+                            playerManager.Select(playerManager.SelectedFigure);
                             //Подсвечиваем клетки куда можно срубить дальше
                             selectCells = killList.Select(i => i.cellToMove).ToList();
                             boardManager.Select(selectCells);
@@ -129,7 +129,7 @@ public class GMDraughts : IGameMode
                         //Двигаем фигуру
                         playerManager.MoveSelected(figure.GetCoordinates());
                         //Стала ли фигура дамкой
-                        CheckQueen(playerManager.selectedFigure);
+                        CheckQueen(playerManager.SelectedFigure);
                         //Отменяем выделение фигуры
                         playerManager.Deselect();
                         //Снимаем подсветку с ранее выбранных клеток
@@ -203,7 +203,7 @@ public class GMDraughts : IGameMode
 
     public void StartGame()
     {
-        foreach (IPlayer player in playerManager.playersChain.Params)
+        foreach (IPlayer player in playerManager.PlayersChain.Params)
         {
             if (player.Color == Color.black)
             {

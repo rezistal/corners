@@ -3,50 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class PlayerManager
+public class PlayerManager : IPlayerManager
 {
-    private Dictionary<(int x, int y), BoardElementController> StartPositions;
-
-    public ChainedParameters<IPlayer> playersChain { get; private set; }
-    public static event GameplayManager.AI ActivateAI;
-    public BoardElementController selectedFigure { get; private set; }
-    public IPlayer CurrentPlayer { get => playersChain.Current; }
-    public IPlayer NextPlayer { get => playersChain.GetNext(); }
-    public List<(int x, int y)> AllFiguresKeys
-    {
-        get
-        {
-            List<(int x, int y)> tl = new List<(int x, int y)>();
-            foreach (IPlayer p in playersChain.Params)
-            {
-                tl.AddRange(p.FiguresKeys);
-            }
-            return tl;
-        }
-    }
+    public Dictionary<(int x, int y), BoardElementController> StartPositions { get; }
     public List<BoardElementController> AllFiguresValues
     {
         get
         {
             List<BoardElementController> bl = new List<BoardElementController>();
-            foreach (IPlayer p in playersChain.Params)
+            foreach (IPlayer p in PlayersChain.Params)
             {
                 bl.AddRange(p.FiguresValues);
             }
             return bl;
         }
     }
+    public List<(int x, int y)> AllFiguresKeys
+    {
+        get
+        {
+            List<(int x, int y)> tl = new List<(int x, int y)>();
+            foreach (IPlayer p in PlayersChain.Params)
+            {
+                tl.AddRange(p.FiguresKeys);
+            }
+            return tl;
+        }
+    }
+
+    public ChainedParameters<IPlayer> PlayersChain { get; private set; }
+    public BoardElementController SelectedFigure { get; private set; }
+    public IPlayer CurrentPlayer { get => PlayersChain.Current; }
+    public IPlayer NextPlayer { get => PlayersChain.GetNext(); }
+
+    public event GameplayManager.AI ActivateAI;
 
     public PlayerManager(List<IPlayer> players)
     {
-        playersChain = new ChainedParameters<IPlayer>(players);
+        PlayersChain = new ChainedParameters<IPlayer>(players);
         StartPositions = new Dictionary<(int x, int y), BoardElementController>();
     }
 
     //Выбор следующего игрока
     public void ChangePlayer()
     {
-        playersChain.SetNext();
+        PlayersChain.SetNext();
     }
 
     //Блокировка всех фигур и снятие с них выделения
@@ -62,13 +63,13 @@ public class PlayerManager
     //Передаем управление AIPlayer или делаем фигуры текущего игрока кликабельными
     public void ActivateCurrentPlayer()
     {
-        if (playersChain.Current.GetType().ToString() == "AIPlayer")
+        if (PlayersChain.Current.GetType().ToString() == "AIPlayer")
         {
             ActivateAI();
         }
         else
         {
-            foreach (BoardElementController b in playersChain.Current.FiguresValues)
+            foreach (BoardElementController b in PlayersChain.Current.FiguresValues)
             {
                 b.Activate();
             }
@@ -79,13 +80,13 @@ public class PlayerManager
     public void Select(BoardElementController figure)
     {
         //Снимаем старое выделение
-        if (selectedFigure != null)
+        if (SelectedFigure != null)
         {
-            selectedFigure.Deselect();
+            SelectedFigure.Deselect();
         }
 
-        selectedFigure = figure;
-        selectedFigure.Select();
+        SelectedFigure = figure;
+        SelectedFigure.Select();
     }
 
     //Перемещение запомненной фигуры на новые координаты
@@ -98,26 +99,26 @@ public class PlayerManager
     public void MoveSelected((int x, int y) coords)
     {
         //Меняем координаты фигуры
-        selectedFigure.SetCoordinates(coords);
+        SelectedFigure.SetCoordinates(coords);
         //Перемещаем фигуру по полю
-        selectedFigure.SetTransform(new Vector2((coords.x * 2 + 1) * 64, (coords.y * 2 + 1) * 64));
+        SelectedFigure.SetTransform(new Vector2((coords.x * 2 + 1) * 64, (coords.y * 2 + 1) * 64));
     }
 
     public void Deselect()
     {
         //Снимаем сфигуры выделение
-        selectedFigure.Deselect();
+        SelectedFigure.Deselect();
         //Обнуляем выбранную фигуру 
-        selectedFigure = null;
+        SelectedFigure = null;
     }
 
     //Перемещение запомненной фигуры на новые координаты и срубание фигуры на указанной клетке
     public void MoveToKill((int x, int y) cellToMove, (int x, int y) cellToKill)
     {
         //Меняем координаты фигуры
-        selectedFigure.SetCoordinates(cellToMove);
+        SelectedFigure.SetCoordinates(cellToMove);
         //Перемещаем фигуру по полю
-        selectedFigure.SetTransform(new Vector2((cellToMove.x * 2 + 1) * 64, (cellToMove.y * 2 + 1) * 64));
+        SelectedFigure.SetTransform(new Vector2((cellToMove.x * 2 + 1) * 64, (cellToMove.y * 2 + 1) * 64));
         //Получаем фигуру которую нужно срубить по переданным координатам
         BoardElementController b = NextPlayer.GetFigureByCoords(cellToKill);
         //Рубим фигуру
@@ -129,7 +130,7 @@ public class PlayerManager
     //Возвращаем все фигуры на их изначальные позиции
     public void SoftReset()
     {
-        selectedFigure = null;
+        SelectedFigure = null;
         foreach (var v in StartPositions)
         {
             v.Value.Alive = true;
@@ -142,7 +143,7 @@ public class PlayerManager
     //Размещаем фигуры на поле
     public void CreatePlayerFiguresAt(Transform parent)
     {
-        foreach (IPlayer player in playersChain.Params)
+        foreach (IPlayer player in PlayersChain.Params)
         {
             foreach ((int x, int y) in player.StartCondition)
             {

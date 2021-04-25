@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoardManager
+public class BoardManager : IBoardManager
 {
     public Dictionary<(int x, int y), BoardElementController> Figures { get; }
     public List<BoardElementController> ActiveFigures { get; }
@@ -10,9 +10,9 @@ public class BoardManager
 
     public BoardManager(IBoard board)
     {
-        Board = board;
         Figures = new Dictionary<(int x, int y), BoardElementController>();
         ActiveFigures = new List<BoardElementController>();
+        Board = board;
     }
 
     //Все клетки не выделены и не кликабельны

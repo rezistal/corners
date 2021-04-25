@@ -6,12 +6,12 @@ using System.Linq;
 public class GMCorners : IGameMode
 {
     private IRule rule;
-    private BoardManager boardManager;
-    private PlayerManager playerManager;
+    private IBoardManager boardManager;
+    private IPlayerManager playerManager;
 
     public bool Endgame { get; set; }
 
-    public GMCorners(IRule r, BoardManager b, PlayerManager p)
+    public GMCorners(IRule r, IBoardManager b, IPlayerManager p)
     {
         rule = r;
         playerManager = p;
