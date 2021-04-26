@@ -8,11 +8,14 @@ public class BoardManager : IBoardManager
     public List<IBoardElementController> ActiveFigures { get; }
     public IBoard Board { get; }
 
+    private IBuilderBoardCells Builder;
+
     public BoardManager(IBoard board)
     {
         Figures = new Dictionary<(int x, int y), IBoardElementController>();
         ActiveFigures = new List<IBoardElementController>();
         Board = board;
+        Builder = new BuilderBoardSpartans();
     }
 
     //Все клетки не выделены и не кликабельны
@@ -55,12 +58,7 @@ public class BoardManager : IBoardManager
     {
         foreach ((int x, int y) in Board.StartCondition)
         {
-            GameObject o = Object.Instantiate(Board.Prefab);
-            o.transform.SetParent(parent, false);
-            IBoardElementController bec = o.GetComponent<IBoardElementController>();
-            bec.SetCoordinates((x, y));
-            bec.SetTransform(new Vector2((x * 2 + 1) * 64, (y * 2 + 1) * 64));
-            bec.Color = Board.GetCellColor(x,y);
+            IBoardElementController bec = Builder.BuildBoardElement(x, y, parent);
             Figures.Add((x, y), bec);
         }
     }

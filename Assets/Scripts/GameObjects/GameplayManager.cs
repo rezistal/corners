@@ -46,10 +46,6 @@ public class GameplayManager : MonoBehaviour
     }
     private void OnEnable()
     {
-        foreach(IBoardElementController b in playerManager.AllFiguresValues)
-        {
-            b.Clicked += Manage;
-        }
         playerManager.ActivateAI += ManageAI;
     }
 
@@ -58,6 +54,10 @@ public class GameplayManager : MonoBehaviour
         foreach (IBoardElementController b in playerManager.AllFiguresValues)
         {
             b.Clicked -= Manage;
+        }
+        foreach (var b in boardManager.Figures)
+        {
+            b.Value.Clicked -= Manage;
         }
         playerManager.ActivateAI -= ManageAI;
     }
@@ -68,6 +68,18 @@ public class GameplayManager : MonoBehaviour
         playerManager.CreatePlayerFiguresAt(figuresLayer);
         boardManager.CreateBoardAt(cellsLayer);
 
+        //Подписываемся на нажатия фигур
+        foreach (IBoardElementController b in playerManager.AllFiguresValues)
+        {
+            b.Clicked += Manage;
+        }
+
+        //Подписываемся на нажатия клеток
+        foreach (var b in boardManager.Figures)
+        {
+            b.Value.Clicked += Manage;
+        }
+
         ResetGame();
     }
 
@@ -75,13 +87,13 @@ public class GameplayManager : MonoBehaviour
     {
         if (gameMode.Endgame)
         {
-            title.text = "Победил " + playerManager.CurrentPlayer.Name + "!";
+            title.text = playerManager.CurrentPlayer.Name + " WINS!";
             title.color = playerManager.CurrentPlayer.Color;
             forfeitButton.SetActive(false);
         }
         else
         {
-            title.text = "Сейчас ходит " + playerManager.CurrentPlayer.Name;
+            title.text = "Now " + playerManager.CurrentPlayer.Name + " turn";
             title.color = playerManager.CurrentPlayer.Color;
             if(playerManager.CurrentPlayer.GetType().ToString() == "AIPlayer")
             {

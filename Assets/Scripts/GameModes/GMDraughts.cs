@@ -41,7 +41,7 @@ public class GMDraughts : IGameMode
         if (!figure.Rule.Equals(queenRule) && (blackQueenSC.Contains(figure.GetCoordinates()) || whiteQueenSC.Contains(figure.GetCoordinates())))
         {
             figure.Rule = queenRule;
-            figure.SetSprite(queenSprite);
+            figure.Evolutiate();
         }
     }
 
@@ -87,7 +87,14 @@ public class GMDraughts : IGameMode
                         //Снимаем подсветку с ранее выбранных клеток
                         boardManager.ResetSelected();
                         //Из списка фигур которые можно срубить берем координаты фигуры которую шашка рубит переходя на текущую клетку
-                        (int x, int y) cellToKill = killList.Where(h => (h.cellToMove.x == figure.X && h.cellToMove.y == figure.Y)).ToList().ElementAt(0).cellToKill;
+                        (int x, int y) cellToKill = (0,0);
+                        foreach (var k in killList)
+                        {
+                            if(k.cellToMove == figure.GetCoordinates())
+                            {
+                                cellToKill = k.cellToKill;
+                            }
+                        }
                         //Перемещаем фигуру и рубим фигуру на координате
                         playerManager.MoveToKill(figure.GetCoordinates(), cellToKill);
                         //Стала ли фигура дамкой
@@ -203,13 +210,15 @@ public class GMDraughts : IGameMode
 
     public void StartGame()
     {
+        Color black = new Color(50 / 255f, 86 / 255f, 117 / 255f);
+        Color red = new Color(163 / 255f, 6 / 255f, 25 / 255f);
         foreach (IPlayer player in playerManager.PlayersChain.Params)
         {
-            if (player.Color == Color.black)
+            if (player.Color == black)
             {
                 player.FiguresValues.ForEach(i => i.Rule = new RuleBlackDraughts());
             }
-            if (player.Color == Color.red)
+            if (player.Color == red)
             {
                 player.FiguresValues.ForEach(i => i.Rule = new RuleWhiteDraughts());
             }

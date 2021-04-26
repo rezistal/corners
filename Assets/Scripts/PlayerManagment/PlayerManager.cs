@@ -38,10 +38,13 @@ public class PlayerManager : IPlayerManager
 
     public event GameplayManager.AI ActivateAI;
 
+    private IPlayerBuilder Builder;
+
     public PlayerManager(List<IPlayer> players)
     {
         PlayersChain = new ChainedParameters<IPlayer>(players);
         StartPositions = new Dictionary<(int x, int y), IBoardElementController>();
+        Builder = new PlayerBuilderSpartans();
     }
 
     //Выбор следующего игрока
@@ -100,8 +103,6 @@ public class PlayerManager : IPlayerManager
     {
         //Меняем координаты фигуры
         SelectedFigure.SetCoordinates(coords);
-        //Перемещаем фигуру по полю
-        SelectedFigure.SetTransform(new Vector2((coords.x * 2 + 1) * 64, (coords.y * 2 + 1) * 64));
     }
 
     public void Deselect()
@@ -117,14 +118,10 @@ public class PlayerManager : IPlayerManager
     {
         //Меняем координаты фигуры
         SelectedFigure.SetCoordinates(cellToMove);
-        //Перемещаем фигуру по полю
-        SelectedFigure.SetTransform(new Vector2((cellToMove.x * 2 + 1) * 64, (cellToMove.y * 2 + 1) * 64));
         //Получаем фигуру которую нужно срубить по переданным координатам
         IBoardElementController b = NextPlayer.GetFigureByCoords(cellToKill);
         //Рубим фигуру
-        b.Alive = false;
-        //Отключаем ее видимость на поле
-        b.GameObject.SetActive(false);
+        b.Die();
     }
 
     //Возвращаем все фигуры на их изначальные позиции
@@ -133,10 +130,8 @@ public class PlayerManager : IPlayerManager
         SelectedFigure = null;
         foreach (var v in StartPositions)
         {
-            v.Value.Alive = true;
-            v.Value.GameObject.SetActive(true);
+            v.Value.Resurrect();
             v.Value.SetCoordinates(v.Key);
-            v.Value.SetTransform(new Vector2((v.Key.x * 2 + 1) * 64, (v.Key.y * 2 + 1) * 64));
         }
     }
     
@@ -147,15 +142,7 @@ public class PlayerManager : IPlayerManager
         {
             foreach ((int x, int y) in player.StartCondition)
             {
-                GameObject o = Object.Instantiate(player.Prefab);
-                o.transform.SetParent(parent, false);
-                IBoardElementController bec = o.GetComponent<IBoardElementController>();
-                bec.SetCoordinates((x, y));
-                bec.SetTransform(new Vector2((x * 2 + 1) * 64, (y * 2 + 1) * 64));
-                
-                bec.Color = player.Color;
-                bec.Select();
-                bec.Deselect();
+                IBoardElementController bec = Builder.BuildPlayerFigure(x, y, parent, player);
 
                 player.FiguresValues.Add(bec);
                 StartPositions.Add((x, y), bec);

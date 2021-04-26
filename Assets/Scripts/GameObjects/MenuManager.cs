@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
@@ -38,8 +39,8 @@ public class MenuManager : MonoBehaviour
     public void Draughts()
     {
         List<IPlayer> players = new List<IPlayer>();
-        players.Add(new PlayerDraughtsHuman(new SCBlackDraughts(), Color.black, "Черные"));
-        players.Add(new PlayerDraughtsHuman(new SCWhiteDraughts(), Color.red, "Белые"));
+        players.Add(new PlayerDraughtsHuman(new SCBlackDraughts(), new Color(50 / 255f, 86 / 255f, 117 / 255f), "blues"));
+        players.Add(new PlayerDraughtsHuman(new SCWhiteDraughts(), new Color(163 / 255f, 6 / 255f, 25 / 255f), "reds"));
 
         pch.PlayerManager = new PlayerManager(players);
 
@@ -76,16 +77,16 @@ public class MenuManager : MonoBehaviour
     private Canvas cornersOptionsPVE;
 
     [SerializeField]
-    private Dropdown ruleOptions; //Правила игры
+    private TMP_Dropdown ruleOptions; //Правила игры
     [SerializeField]
-    private Dropdown modeOptions; //Режим игры PvP или PvE
+    private TMP_Dropdown modeOptions; //Режим игры PvP или PvE
 
     [SerializeField]
-    private InputField firstNamePVP;  //Имя первого игрока
+    private TMP_InputField firstNamePVP;  //Имя первого игрока
     [SerializeField]
-    private InputField secondNamePVP; //Имя второго игрока
+    private TMP_InputField secondNamePVP; //Имя второго игрока
     [SerializeField]
-    private InputField firstNamePVE;  //Имя игрока играющего против AI
+    private TMP_InputField firstNamePVE;  //Имя игрока играющего против AI
 
     #region RulesOption
     public void CornersRulesOptions()
@@ -144,12 +145,12 @@ public class MenuManager : MonoBehaviour
         switch (modeOptions.value)
         {
             case 0:
-                players.Add(new PlayerCornersHuman(new SCBottomRight(), Color.black, firstNamePVP.text));
-                players.Add(new PlayerCornersHuman(new SCTopLeft(), Color.red, secondNamePVP.text));
+                players.Add(new PlayerCornersHuman(new SCBottomRight(), new Color(50 / 255f, 86 / 255f, 117 / 255f), firstNamePVP.text));
+                players.Add(new PlayerCornersHuman(new SCTopLeft(), new Color(163 / 255f, 6 / 255f, 25 / 255f), secondNamePVP.text));
                 break;
             case 1:
                 players.Add(new AIPlayer());
-                players.Add(new PlayerCornersHuman(new SCTopLeft(), Color.red, firstNamePVE.text));
+                players.Add(new PlayerCornersHuman(new SCTopLeft(), new Color(163 / 255f, 6 / 255f, 25 / 255f), firstNamePVE.text));
                 break;
         }
         pch.PlayerManager = new PlayerManager(players);
