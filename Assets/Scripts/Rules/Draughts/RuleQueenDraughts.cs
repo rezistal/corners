@@ -79,7 +79,10 @@ public class RuleQueenDraughts : IRule
             }
             else
             {
-                result.AddRange(KillDirection(inc_x, inc_y, cellToKill.x, cellToKill.y, friendlyFigures, enemyFigures, boardSize));
+                if(!friendlyFigures.Contains(cellToMove) && !enemyFigures.Contains(cellToMove))
+                {
+                    result.AddRange(KillDirection(inc_x, inc_y, cellToKill.x, cellToKill.y, friendlyFigures, enemyFigures, boardSize));
+                }
             }
         }
         return result;
